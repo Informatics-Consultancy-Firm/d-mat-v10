@@ -108,12 +108,11 @@
         }
         .section-tab:hover { background: #e7f3ff; }
         .section-tab.active { background: #004080; color: #ffffff; }
-
-        /* NEW: highlight stats sections with a special accent color */
         .section-tab.stats-tab { border-color: #004080; color: #004080; background: #f8f9fa; }
-        .section-tab.stats-tab:hover {  }
         .section-tab.stats-tab.active { background: #004080; color: #ffffff; border-color: #004080; }
-
+        .section-tab.math-tab { border-color: #004080; color: #004080; background: #f8f9fa; }
+        .section-tab.math-tab:hover { background: #e7f3ff; }
+        .section-tab.math-tab.active { background: #004080; color: #ffffff; border-color: #004080; }
         .progress-bar { background: #f8f9fa; height: 8px; border-radius: 4px; overflow: hidden; border: 2px solid #004080; }
         .progress-fill { background: linear-gradient(90deg, #004080, #0056b3); height: 100%; transition: width 0.5s ease; }
         .progress-text { text-align: center; color: #000000; font-size: 13px; font-weight: 700; margin-top: 10px; }
@@ -127,15 +126,15 @@
             padding: 15px 20px; margin-bottom: 20px;
             border-radius: 6px; display: flex; align-items: center; gap: 15px;
         }
-        /* Stats section title bar uses dark red */
         .section-title-bar.stats-bar { background-color: #004080; }
-
+        .section-title-bar.math-bar { background-color: #004080; }
         .section-title-bar .section-number {
             background: #ffffff; color: #004080;
             width: 40px; height: 40px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             font-size: 16px; font-weight: 700; flex-shrink: 0;
         }
+        .section-title-bar.math-bar .section-number { color: #004080; }
         .section-title-bar.stats-bar .section-number { color: #004080; }
         .section-title-bar .section-title { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
         .data-flow-intro {
@@ -143,6 +142,7 @@
             border-radius: 8px; padding: 20px; margin-bottom: 20px; text-align: center;
         }
         .data-flow-intro.stats-intro { border-color: #004080; background: #f8f9fa; }
+        .data-flow-intro.math-intro { border-color: #004080; background: #f8f9fa; }
         .data-flow-intro p { font-size: 13px; color: #000000; line-height: 1.8; }
         .section-content { display: none; animation: fadeIn 0.4s ease; }
         .section-content.active { display: block; }
@@ -154,9 +154,10 @@
             transition: all 0.2s ease; cursor: pointer;
             min-height: 140px; display: flex; flex-direction: column;
         }
-        /* Stats cards use dark red */
         .card.stats-card { border-color: #004080; }
-        .card.stats-card:hover {  box-shadow: 0 6px 20px rgba(0,64,128,0.2); }
+        .card.stats-card:hover { box-shadow: 0 6px 20px rgba(0,64,128,0.2); }
+        .card.math-card { border-color: #004080; background: #f8f9fa; }
+        .card.math-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(106,13,173,0.2); background: #e7f3ff; }
         .card:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(0,64,128,0.2);
@@ -168,6 +169,7 @@
             display: flex; flex-direction: column; justify-content: center;
         }
         .card.stats-card .card-header { background-color: #004080; }
+        .card.math-card .card-header { background-color: #004080; }
         .card-number {
             display: inline-flex; align-items: center; justify-content: center;
             background: #ffffff; color: #004080;
@@ -175,6 +177,7 @@
             font-weight: 700; font-size: 13px; margin-bottom: 8px;
         }
         .card.stats-card .card-number { color: #004080; }
+        .card.math-card .card-number { color: #004080; }
         .card-title { font-size: 12px; font-weight: 700; margin-bottom: 5px; letter-spacing: 0.5px; }
         .card-description { font-size: 10px; opacity: 0.9; line-height: 1.4; font-weight: 500; }
         .nav-buttons {
@@ -424,11 +427,12 @@
                 <div class="section-tab" onclick="goToSection(21)">21. SNT COSTING</div>
                 <div class="section-tab stats-tab" onclick="goToSection(22)">22. DESCRIPTIVE STATISTICS</div>
                 <div class="section-tab stats-tab" onclick="goToSection(23)">23. INFERENTIAL STATISTICS</div>
+                <div class="section-tab math-tab" onclick="goToSection(24)">24. MATHEMATICAL MODELING</div>
             </div>
             <div class="progress-bar">
-                <div class="progress-fill" id="progressFill" style="width:4.35%"></div>
+                <div class="progress-fill" id="progressFill" style="width:4.17%"></div>
             </div>
-            <div class="progress-text" id="progressText">Section 1 of 23 | DATA ASSEMBLY</div>
+            <div class="progress-text" id="progressText">Section 1 of 24 | DATA ASSEMBLY</div>
         </div>
 
         <div class="content-card">
@@ -441,7 +445,7 @@
                     <div class="card" onclick="openModal('modal-1-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">DATA ASSEMBLY AND COMMUNICATION PLATFORM</div><div class="card-description">Central hub for data assembly, collaboration, and communication.</div></div></div>
                     <div class="card" onclick="openModal('modal-1-2')"><div class="card-header"><div class="card-number">2</div><div class="card-title">DATA COLLECTION (ICF COLLECT)</div><div class="card-description">Design data collection forms, collect data offline, and submit when data is available.</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" disabled>BACK</button><span class="nav-indicator">Section 1 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" disabled>BACK</button><span class="nav-indicator">Section 1 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 2 -->
@@ -453,7 +457,7 @@
                     <div class="card" onclick="openModal('modal-2-2')"><div class="card-header"><div class="card-number">2</div><div class="card-title">POPULATION DATA</div><div class="card-description">Extract population datasets from World Population</div></div></div>
                     <div class="card" onclick="openModal('modal-2-3')"><div class="card-header"><div class="card-number">3</div><div class="card-title">RAINFALL DATA</div><div class="card-description">Extract rainfall and climate data from CHIRPS</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 2 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 2 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 3 -->
@@ -475,7 +479,7 @@
                     <div class="card" onclick="openModal('modal-3-12')"><div class="card-header"><div class="card-number">12</div><div class="card-title">SHAPEFILE BOUNDARY OVERLAY</div><div class="card-description">Create or overlay higher admin unit boundaries</div></div></div>
                     <div class="card" onclick="openModal('modal-3-13')"><div class="card-header"><div class="card-number">13</div><div class="card-title">ADMIN-UNIT-SHAPEFILES</div><div class="card-description">Generate admin unit shapefiles from boundaries</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 3 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 3 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 4 -->
@@ -501,7 +505,7 @@
                     <div class="card" onclick="openModal('modal-4-16')"><div class="card-header"><div class="card-number">16</div><div class="card-title">DATA TYPE CONVERSION</div><div class="card-description">Convert column data types appropriately</div></div></div>
                     <div class="card" onclick="openModal('modal-4-17')"><div class="card-header"><div class="card-number">17</div><div class="card-title">FINAL EPI DATABASE</div><div class="card-description">Generate final consolidated EPI database</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 4 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 4 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 5 -->
@@ -513,7 +517,7 @@
                     <div class="card" onclick="openModal('modal-5-2')"><div class="card-header"><div class="card-number">2</div><div class="card-title">HF REPORTING STATUS</div><div class="card-description">Track health facility reporting status</div></div></div>
                     <div class="card" onclick="openModal('modal-5-3')"><div class="card-header"><div class="card-number">3</div><div class="card-title">REPORTING RATE BY ADMIN LEVEL</div><div class="card-description">Calculate reporting rates at admin levels</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 5 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 5 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 6 -->
@@ -523,7 +527,7 @@
                 <div class="cards-grid">
                     <div class="card" onclick="openModal('modal-6-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">HF ACTIVE/INACTIVE STATUS</div><div class="card-description">Classify facilities as active or inactive</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 6 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 6 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 7 -->
@@ -533,7 +537,7 @@
                 <div class="cards-grid">
                     <div class="card" onclick="openModal('modal-7-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">COHERENCY CHECK & STRIPPLOTS</div><div class="card-description">Run coherency validation and stripplots</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 7 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 7 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 8 -->
@@ -543,7 +547,7 @@
                 <div class="cards-grid">
                     <div class="card" onclick="openModal('modal-8-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">CASE MANAGEMENT ANALYSIS</div><div class="card-description">Analyze testing and treatment indicators</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 8 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 8 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 9 -->
@@ -559,7 +563,7 @@
                     <div class="card" onclick="openModal('modal-9-6')"><div class="card-header"><div class="card-number">6</div><div class="card-title">ADJUSTED INCIDENCE (LEVEL 3)</div><div class="card-description">Third level adjusted incidence</div></div></div>
                     <div class="card" onclick="openModal('modal-9-7')"><div class="card-header"><div class="card-number">7</div><div class="card-title">RISK CLASSIFICATION</div><div class="card-description">Classify areas by risk levels</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 9 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 9 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 10 -->
@@ -572,7 +576,7 @@
                     <div class="card" onclick="openModal('modal-10-3')"><div class="card-header"><div class="card-number">3</div><div class="card-title">POINT COORDINATES</div><div class="card-description">Manage facility coordinates</div></div></div>
                     <div class="card" onclick="openModal('modal-10-4')"><div class="card-header"><div class="card-number">4</div><div class="card-title">ACCESS TO CARE</div><div class="card-description">Analyze healthcare access</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 10 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 10 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 11 -->
@@ -596,7 +600,7 @@
                     <div class="card" onclick="openModal('modal-11-14')"><div class="card-header"><div class="card-number">14</div><div class="card-title">DATA TYPE CONVERSION</div><div class="card-description">Convert data types</div></div></div>
                     <div class="card" onclick="openModal('modal-11-15')"><div class="card-header"><div class="card-number">15</div><div class="card-title">FINAL INTERVENTION DATABASE</div><div class="card-description">Generate final database</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 11 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 11 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 12 -->
@@ -606,7 +610,7 @@
                 <div class="cards-grid">
                     <div class="card" onclick="openModal('modal-12-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">INTERVENTION COHERENCY CHECK</div><div class="card-description">Run coherency validation</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 12 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 12 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 13 -->
@@ -616,7 +620,7 @@
                 <div class="cards-grid">
                     <div class="card" onclick="openModal('modal-13-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">INTERVENTION GEOSPATIAL ANALYSIS</div><div class="card-description">Generate geospatial analysis</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 13 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 13 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 14 -->
@@ -640,7 +644,7 @@
                     <div class="card" onclick="openModal('modal-14-14')"><div class="card-header"><div class="card-number">14</div><div class="card-title">DATA TYPE CONVERSION</div><div class="card-description">Convert data types</div></div></div>
                     <div class="card" onclick="openModal('modal-14-15')"><div class="card-header"><div class="card-number">15</div><div class="card-title">FINAL STOCKOUT DATABASE</div><div class="card-description">Generate final database</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 14 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 14 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 15 -->
@@ -650,7 +654,7 @@
                 <div class="cards-grid">
                     <div class="card" onclick="openModal('modal-15-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">STOCKOUT COHERENCY CHECK</div><div class="card-description">Run coherency validation</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 15 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 15 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 16 -->
@@ -660,7 +664,7 @@
                 <div class="cards-grid">
                     <div class="card" onclick="openModal('modal-16-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">STOCKOUT GEOSPATIAL ANALYSIS</div><div class="card-description">Generate geospatial analysis</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 16 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 16 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 17 -->
@@ -670,7 +674,7 @@
                 <div class="cards-grid">
                     <div class="card" onclick="openModal('modal-17-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">OTHER INTERVENTIONS GEOSPATIAL</div><div class="card-description">Analyze other interventions</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 17 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 17 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 18 -->
@@ -680,7 +684,7 @@
                 <div class="cards-grid">
                     <div class="card" onclick="openModal('modal-18-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">TARGETING DATA PREPARATION</div><div class="card-description">Prepare targeting dataset</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 18 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 18 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 19 -->
@@ -690,7 +694,7 @@
                 <div class="cards-grid">
                     <div class="card" onclick="openModal('modal-19-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">INTERVENTION TARGETING & MIXES</div><div class="card-description">Design decision trees and mixes</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 19 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 19 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 20 -->
@@ -700,7 +704,7 @@
                 <div class="cards-grid">
                     <div class="card" onclick="openModal('modal-20-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">PRIORITIZATION DECISION TREE</div><div class="card-description">Apply decision tree logic</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 20 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 20 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
             <!-- SECTION 21 -->
@@ -710,12 +714,10 @@
                 <div class="cards-grid">
                     <div class="card" onclick="openModal('modal-21-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">SNT COSTING CALCULATOR</div><div class="card-description">Calculate intervention costs</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 21 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 21 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
-            <!-- ======================================================= -->
-            <!-- SECTION 22: DESCRIPTIVE STATISTICS                       -->
-            <!-- ======================================================= -->
+            <!-- SECTION 22: DESCRIPTIVE STATISTICS -->
             <div class="section-content" id="section22">
                 <div class="section-title-bar stats-bar">
                     <span class="section-number">22</span>
@@ -746,12 +748,10 @@
                     <div class="card stats-card" onclick="openModal('modal-22-19')"><div class="card-header"><div class="card-number">19</div><div class="card-title">DENSITY PLOT</div><div class="card-description">Kernel density estimation plots for continuous distributions by group</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-22-20')"><div class="card-header"><div class="card-number">20</div><div class="card-title">CUMULATIVE DISTRIBUTION PLOT</div><div class="card-description">Empirical CDF and ECDF plots for comparing distributions across groups</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 22 of 23</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 22 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
 
-            <!-- ======================================================= -->
-            <!-- SECTION 23: INFERENTIAL STATISTICS                       -->
-            <!-- ======================================================= -->
+            <!-- SECTION 23: INFERENTIAL STATISTICS -->
             <div class="section-content" id="section23">
                 <div class="section-title-bar stats-bar">
                     <span class="section-number">23</span>
@@ -761,27 +761,23 @@
                     <p>Comprehensive suite of inferential tests, regression models, and advanced analytical methods for hypothesis testing, causal inference, and predictive modelling of public health data.</p>
                 </div>
                 <div class="cards-grid">
-                    <!-- Categorical / Non-parametric Tests -->
                     <div class="card stats-card" onclick="openModal('modal-23-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">CHI-SQUARE GOODNESS OF FIT</div><div class="card-description">Test whether observed frequencies match an expected distribution for one categorical variable</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-2')"><div class="card-header"><div class="card-number">2</div><div class="card-title">CHI-SQUARE TEST OF INDEPENDENCE</div><div class="card-description">Test association between two categorical variables in a contingency table</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-3')"><div class="card-header"><div class="card-number">3</div><div class="card-title">FISHER'S EXACT TEST</div><div class="card-description">Exact test of independence for small sample 2x2 contingency tables</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-4')"><div class="card-header"><div class="card-number">4</div><div class="card-title">FISHER'S GOODNESS OF FIT</div><div class="card-description">Freeman-Tukey (Fisher) goodness-of-fit test for sparse or small-sample frequency data</div></div></div>
-                    <div class="card stats-card" onclick="openModal('modal-23-5')"><div class="card-header"><div class="card-number">5</div><div class="card-title">McNemar'S TEST</div><div class="card-description">Paired nominal data test for before-after or matched-pair binary outcomes</div></div></div>
+                    <div class="card stats-card" onclick="openModal('modal-23-5')"><div class="card-header"><div class="card-number">5</div><div class="card-title">McNEMAR'S TEST</div><div class="card-description">Paired nominal data test for before-after or matched-pair binary outcomes</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-6')"><div class="card-header"><div class="card-number">6</div><div class="card-title">MANN-WHITNEY U TEST</div><div class="card-description">Non-parametric test comparing distributions of two independent groups</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-7')"><div class="card-header"><div class="card-number">7</div><div class="card-title">WILCOXON SIGNED-RANK TEST</div><div class="card-description">Non-parametric test for paired or one-sample comparison against a median</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-8')"><div class="card-header"><div class="card-number">8</div><div class="card-title">KRUSKAL-WALLIS TEST</div><div class="card-description">Non-parametric one-way ANOVA equivalent for three or more independent groups</div></div></div>
-                    <!-- T-Tests -->
                     <div class="card stats-card" onclick="openModal('modal-23-9')"><div class="card-header"><div class="card-number">9</div><div class="card-title">ONE-SAMPLE T-TEST</div><div class="card-description">Test whether the sample mean differs significantly from a known reference value</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-10')"><div class="card-header"><div class="card-number">10</div><div class="card-title">INDEPENDENT TWO-SAMPLE T-TEST</div><div class="card-description">Compare means of two independent groups with equal or unequal variance options</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-11')"><div class="card-header"><div class="card-number">11</div><div class="card-title">PAIRED SAMPLES T-TEST</div><div class="card-description">Compare means of matched or repeated measures on the same subjects</div></div></div>
-                    <!-- ANOVA Family -->
                     <div class="card stats-card" onclick="openModal('modal-23-12')"><div class="card-header"><div class="card-number">12</div><div class="card-title">ONE-WAY ANOVA</div><div class="card-description">Test mean differences across three or more groups with post-hoc comparisons (Tukey, Bonferroni)</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-13')"><div class="card-header"><div class="card-number">13</div><div class="card-title">TWO-WAY ANOVA</div><div class="card-description">Two-factor ANOVA with main effects and interaction term; includes balanced and unbalanced designs</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-14')"><div class="card-header"><div class="card-number">14</div><div class="card-title">THREE-WAY ANOVA</div><div class="card-description">Three-factor ANOVA examining main effects and all two-way and three-way interactions</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-15')"><div class="card-header"><div class="card-number">15</div><div class="card-title">REPEATED MEASURES ANOVA</div><div class="card-description">Within-subjects ANOVA for time-series or repeated measurement designs</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-16')"><div class="card-header"><div class="card-number">16</div><div class="card-title">MANOVA</div><div class="card-description">Multivariate ANOVA for simultaneous testing of multiple continuous outcome variables</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-17')"><div class="card-header"><div class="card-number">17</div><div class="card-title">ANCOVA</div><div class="card-description">Analysis of covariance adjusting for continuous confounders in group comparisons</div></div></div>
-                    <!-- Regression Models -->
                     <div class="card stats-card" onclick="openModal('modal-23-18')"><div class="card-header"><div class="card-number">18</div><div class="card-title">SIMPLE LINEAR REGRESSION</div><div class="card-description">Model the linear relationship between one predictor and a continuous outcome</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-19')"><div class="card-header"><div class="card-number">19</div><div class="card-title">MULTIPLE LINEAR REGRESSION</div><div class="card-description">Multivariable linear model with diagnostics: residuals, VIF, leverage, and heteroscedasticity tests</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-20')"><div class="card-header"><div class="card-number">20</div><div class="card-title">SIMPLE LOGISTIC REGRESSION</div><div class="card-description">Binary outcome model with odds ratios, confidence intervals, and ROC-AUC</div></div></div>
@@ -793,30 +789,54 @@
                     <div class="card stats-card" onclick="openModal('modal-23-26')"><div class="card-header"><div class="card-number">26</div><div class="card-title">ORDINAL LOGISTIC REGRESSION</div><div class="card-description">Proportional odds model for ordered categorical outcomes</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-27')"><div class="card-header"><div class="card-number">27</div><div class="card-title">POISSON REGRESSION</div><div class="card-description">Count data model with incidence rate ratios; offset for population exposure</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-28')"><div class="card-header"><div class="card-number">28</div><div class="card-title">NEGATIVE BINOMIAL REGRESSION</div><div class="card-description">Overdispersed count model handling excess variance beyond Poisson assumptions</div></div></div>
-                    <!-- Survival Analysis -->
                     <div class="card stats-card" onclick="openModal('modal-23-29')"><div class="card-header"><div class="card-number">29</div><div class="card-title">KAPLAN-MEIER SURVIVAL ANALYSIS</div><div class="card-description">Estimate and plot survival functions with log-rank test for group comparisons</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-30')"><div class="card-header"><div class="card-number">30</div><div class="card-title">LOG-RANK TEST</div><div class="card-description">Non-parametric comparison of survival curves between two or more groups</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-31')"><div class="card-header"><div class="card-number">31</div><div class="card-title">COX PROPORTIONAL HAZARDS</div><div class="card-description">Semi-parametric survival regression with hazard ratios, Schoenfeld residuals, PH assumption check</div></div></div>
-                    <!-- Odds & Effect Measures -->
                     <div class="card stats-card" onclick="openModal('modal-23-32')"><div class="card-header"><div class="card-number">32</div><div class="card-title">ODDS RATIO & RISK RATIO</div><div class="card-description">Calculate OR, RR, ARR, NNT with 95% CI from 2x2 tables; stratified Mantel-Haenszel estimates</div></div></div>
-                    <!-- Causal Inference -->
                     <div class="card stats-card" onclick="openModal('modal-23-33')"><div class="card-header"><div class="card-number">33</div><div class="card-title">INTERRUPTED TIME SERIES (ITS)</div><div class="card-description">Segmented regression for evaluating the effect of a policy or intervention on a time-series outcome</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-34')"><div class="card-header"><div class="card-number">34</div><div class="card-title">DIFFERENCE-IN-DIFFERENCES (DiD)</div><div class="card-description">Quasi-experimental DiD estimator with parallel trends test and heterogeneity analysis</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-35')"><div class="card-header"><div class="card-number">35</div><div class="card-title">PROPENSITY SCORE MATCHING</div><div class="card-description">Balance covariates between treatment groups using propensity score matching and weighting</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-36')"><div class="card-header"><div class="card-number">36</div><div class="card-title">INSTRUMENTAL VARIABLE (IV)</div><div class="card-description">Two-stage least squares estimation for addressing endogeneity in observational studies</div></div></div>
-                    <!-- Mixed Models & Multilevel -->
                     <div class="card stats-card" onclick="openModal('modal-23-37')"><div class="card-header"><div class="card-number">37</div><div class="card-title">MIXED EFFECTS LINEAR MODEL</div><div class="card-description">Linear mixed model with random intercepts and slopes for repeated or clustered data</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-38')"><div class="card-header"><div class="card-number">38</div><div class="card-title">MULTILEVEL (HIERARCHICAL) MODEL</div><div class="card-description">Multilevel modelling for nested data structures (patients within facilities within districts)</div></div></div>
-                    <!-- Correlation -->
                     <div class="card stats-card" onclick="openModal('modal-23-39')"><div class="card-header"><div class="card-number">39</div><div class="card-title">PEARSON & SPEARMAN CORRELATION</div><div class="card-description">Parametric and non-parametric correlation coefficients with significance testing</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-40')"><div class="card-header"><div class="card-number">40</div><div class="card-title">PARTIAL CORRELATION</div><div class="card-description">Correlation between two variables controlling for the effect of one or more covariates</div></div></div>
-                    <!-- Other Inferential -->
                     <div class="card stats-card" onclick="openModal('modal-23-41')"><div class="card-header"><div class="card-number">41</div><div class="card-title">NORMALITY TESTS</div><div class="card-description">Shapiro-Wilk, Kolmogorov-Smirnov, Anderson-Darling, and QQ-plot normality diagnostics</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-42')"><div class="card-header"><div class="card-number">42</div><div class="card-title">LEVENE'S & BARTLETT'S TEST</div><div class="card-description">Test homogeneity of variances assumption prior to ANOVA or t-tests</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-43')"><div class="card-header"><div class="card-number">43</div><div class="card-title">POWER & SAMPLE SIZE CALCULATOR</div><div class="card-description">Calculate required sample size or achieved power for t-tests, ANOVA, proportions, and regression</div></div></div>
                     <div class="card stats-card" onclick="openModal('modal-23-44')"><div class="card-header"><div class="card-number">44</div><div class="card-title">META-ANALYSIS</div><div class="card-description">Fixed and random effects meta-analysis with forest plots, funnel plots, and heterogeneity statistics</div></div></div>
                 </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 23 of 23</span><button class="nav-btn next-btn" disabled>COMPLETE</button></div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 23 of 24</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+            </div>
+
+            <!-- SECTION 24: MATHEMATICAL MODELING -->
+            <div class="section-content" id="section24">
+                <div class="section-title-bar math-bar">
+                    <span class="section-number">24</span>
+                    <span class="section-title">MATHEMATICAL MODELING &amp; COMPARTMENTAL MODELS</span>
+                </div>
+                <div class="data-flow-intro math-intro">
+                    <p>Build, simulate, and analyse compartmental epidemiological models for malaria and other infectious diseases. From classic SIR dynamics to vector-host transmission, parameter estimation, and reproduction number calculation.</p>
+                </div>
+                <div class="cards-grid">
+                    <div class="card math-card" onclick="openModal('modal-24-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">SIR MODEL</div><div class="card-description">Classic Susceptible-Infectious-Recovered model with phase-plane, time-series, and R&#8320; output</div></div></div>
+                    <div class="card math-card" onclick="openModal('modal-24-2')"><div class="card-header"><div class="card-number">2</div><div class="card-title">SIRS MODEL</div><div class="card-description">SIR with waning immunity; susceptibles re-enter the pool after loss of protection</div></div></div>
+                    <div class="card math-card" onclick="openModal('modal-24-3')"><div class="card-header"><div class="card-number">3</div><div class="card-title">SIS MODEL</div><div class="card-description">Susceptible-Infectious-Susceptible model for diseases conferring no lasting immunity</div></div></div>
+                    <div class="card math-card" onclick="openModal('modal-24-4')"><div class="card-header"><div class="card-number">4</div><div class="card-title">SEIR MODEL</div><div class="card-description">Includes exposed/latent compartment before infectious stage; tracks epidemic dynamics</div></div></div>
+                    <div class="card math-card" onclick="openModal('modal-24-5')"><div class="card-header"><div class="card-number">5</div><div class="card-title">SEIRS MODEL</div><div class="card-description">SEIR with waning immunity allowing re-entry to susceptible pool after recovery</div></div></div>
+                    <div class="card math-card" onclick="openModal('modal-24-6')"><div class="card-header"><div class="card-number">6</div><div class="card-title">SIRD MODEL</div><div class="card-description">SIR extended with disease-induced mortality; tracks fatality dynamics separately</div></div></div>
+                    <div class="card math-card" onclick="openModal('modal-24-7')"><div class="card-header"><div class="card-number">7</div><div class="card-title">SEIRD MODEL</div><div class="card-description">SEIR extended with mortality compartment for modelling case fatality rate dynamics</div></div></div>
+                    <div class="card math-card" onclick="openModal('modal-24-8')"><div class="card-header"><div class="card-number">8</div><div class="card-title">ROSS-MACDONALD MODEL</div><div class="card-description">Classic vector-host malaria model with mosquito biting rate, EIR, and vectorial capacity</div></div></div>
+                    <div class="card math-card" onclick="openModal('modal-24-9')"><div class="card-header"><div class="card-number">9</div><div class="card-title">VECTOR-HOST (VBD) MODEL</div><div class="card-description">General vector-borne disease compartmental model for human and vector populations</div></div></div>
+                    <div class="card math-card" onclick="openModal('modal-24-10')"><div class="card-header"><div class="card-number">10</div><div class="card-title">AGE-STRUCTURED MODEL</div><div class="card-description">Age-stratified SEIR with WAIFW (who acquires infection from whom) contact matrix</div></div></div>
+                    <div class="card math-card" onclick="openModal('modal-24-11')"><div class="card-header"><div class="card-number">11</div><div class="card-title">MULTI-PATCH SPATIAL MODEL</div><div class="card-description">Metapopulation model linking patches via mobility matrix; spatial spread analysis</div></div></div>
+                    <div class="card math-card" onclick="openModal('modal-24-12')"><div class="card-header"><div class="card-number">12</div><div class="card-title">STOCHASTIC SIR MODEL</div><div class="card-description">Gillespie stochastic simulation of SIR with extinction probability and ensemble plots</div></div></div>
+                    <div class="card math-card" onclick="openModal('modal-24-13')"><div class="card-header"><div class="card-number">13</div><div class="card-title">BASIC REPRODUCTION NUMBER (R&#8320;)</div><div class="card-description">Next-generation matrix method for R&#8320; calculation with sensitivity to parameter changes</div></div></div>
+                    <div class="card math-card" onclick="openModal('modal-24-14')"><div class="card-header"><div class="card-number">14</div><div class="card-title">SENSITIVITY ANALYSIS (PRCC)</div><div class="card-description">Partial Rank Correlation Coefficient and tornado plots for model parameter sensitivity</div></div></div>
+                    <div class="card math-card" onclick="openModal('modal-24-15')"><div class="card-header"><div class="card-number">15</div><div class="card-title">PARAMETER ESTIMATION &amp; FITTING</div><div class="card-description">Least-squares and MCMC Bayesian fitting of model parameters to observed epidemic data</div></div></div>
+                    <div class="card math-card" onclick="openModal('modal-24-16')"><div class="card-header"><div class="card-number">16</div><div class="card-title">EPIDEMIC THRESHOLD ANALYSIS</div><div class="card-description">Bifurcation diagrams, endemic equilibrium, and herd immunity threshold computation</div></div></div>
+                </div>
+                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 24 of 24</span><button class="nav-btn next-btn" disabled>COMPLETE</button></div>
             </div>
 
         </div><!-- end content-card -->
@@ -825,7 +845,7 @@
             <p style="margin:0;">National Malaria Control Programme</p>
             <p>Ministry of Health and Sanitation, Sierra Leone</p>
             <p style="font-size:11px;">Medical Stores Compound, Freetown, Sierra Leone</p>
-            <p style="font-size:10px;">© 2025 Informatics Consultancy Firm-Sierra Leone (ICF-SL)</p>
+            <p style="font-size:10px;">&#169; 2025 Informatics Consultancy Firm-Sierra Leone (ICF-SL)</p>
         </div>
     </div>
 
@@ -839,13 +859,13 @@
                 </h2>
                 <div class="modal-header-buttons">
                     <button class="open-external-btn" id="openExternalBtn" onclick="openInNewTab()" style="display:none;">OPEN IN NEW TAB</button>
-                    <button class="close-btn" onclick="closeModal()">×</button>
+                    <button class="close-btn" onclick="closeModal()">&#215;</button>
                 </div>
             </div>
             <div class="modal-tabs">
-                <button class="modal-tab active" id="tabConcept" onclick="switchTab('concept')"><span class="tab-icon">📖</span> CONCEPT</button>
-                <button class="modal-tab" id="tabIllustration" onclick="switchTab('illustration')"><span class="tab-icon">🎬</span> ILLUSTRATION</button>
-                <button class="modal-tab" id="tabTool" onclick="switchTab('tool')"><span class="tab-icon">🛠️</span> TOOL</button>
+                <button class="modal-tab active" id="tabConcept" onclick="switchTab('concept')"><span class="tab-icon">&#128214;</span> CONCEPT</button>
+                <button class="modal-tab" id="tabIllustration" onclick="switchTab('illustration')"><span class="tab-icon">&#127910;</span> ILLUSTRATION</button>
+                <button class="modal-tab" id="tabTool" onclick="switchTab('tool')"><span class="tab-icon">&#128295;</span> TOOL</button>
             </div>
             <div class="modal-body">
                 <div class="iframe-container">
@@ -861,7 +881,7 @@
                         <button class="open-btn" onclick="openInNewTab()">OPEN IN NEW TAB</button>
                     </div>
                     <div class="placeholder-message" id="modalPlaceholder">
-                        <div class="placeholder-icon" id="placeholderIcon">📖</div>
+                        <div class="placeholder-icon" id="placeholderIcon">&#128214;</div>
                         <h3 id="placeholderTitle">Content Not Available</h3>
                         <p id="placeholderText">URL not configured yet for this tab.</p>
                     </div>
@@ -874,7 +894,7 @@
         let deferredPrompt;
         let newWorker;
         let currentSection = 1;
-        const totalSections = 23;
+        const totalSections = 24;
         let currentToolKey = '';
         let currentTab = 'concept';
 
@@ -924,7 +944,8 @@
             13:"INTERVENTION GEOSPATIAL", 14:"STOCKOUT PREPROCESSING", 15:"STOCKOUT COHERENCY",
             16:"STOCKOUT GEOSPATIAL", 17:"OTHER INTERVENTIONS", 18:"TARGETING PREPROCESSING",
             19:"DECISION TREES & MIXES", 20:"PRIORITIZATION", 21:"SNT COSTING",
-            22:"DESCRIPTIVE STATISTICS", 23:"INFERENTIAL STATISTICS"
+            22:"DESCRIPTIVE STATISTICS", 23:"INFERENTIAL STATISTICS",
+            24:"MATHEMATICAL MODELING"
         };
 
         const toolUrls = {
@@ -1005,7 +1026,6 @@
             "19-1":{ concept:"", illustration:"", tool:"https://mohamedsillahkanu.github.io/intervention-targeting/" },
             "20-1":{ concept:"", illustration:"", tool:"" },
             "21-1":{ concept:"", illustration:"", tool:"https://mohamedsillahkanu.github.io/costing-tool/" },
-            // Section 22: Descriptive Statistics
             "22-1":{ concept:"", illustration:"", tool:"" }, "22-2":{ concept:"", illustration:"", tool:"" },
             "22-3":{ concept:"", illustration:"", tool:"" }, "22-4":{ concept:"", illustration:"", tool:"" },
             "22-5":{ concept:"", illustration:"", tool:"" }, "22-6":{ concept:"", illustration:"", tool:"" },
@@ -1016,7 +1036,6 @@
             "22-15":{ concept:"", illustration:"", tool:"" }, "22-16":{ concept:"", illustration:"", tool:"" },
             "22-17":{ concept:"", illustration:"", tool:"" }, "22-18":{ concept:"", illustration:"", tool:"" },
             "22-19":{ concept:"", illustration:"", tool:"" }, "22-20":{ concept:"", illustration:"", tool:"" },
-            // Section 23: Inferential Statistics
             "23-1":{ concept:"", illustration:"", tool:"" }, "23-2":{ concept:"", illustration:"", tool:"" },
             "23-3":{ concept:"", illustration:"", tool:"" }, "23-4":{ concept:"", illustration:"", tool:"" },
             "23-5":{ concept:"", illustration:"", tool:"" }, "23-6":{ concept:"", illustration:"", tool:"" },
@@ -1038,7 +1057,16 @@
             "23-37":{ concept:"", illustration:"", tool:"" }, "23-38":{ concept:"", illustration:"", tool:"" },
             "23-39":{ concept:"", illustration:"", tool:"" }, "23-40":{ concept:"", illustration:"", tool:"" },
             "23-41":{ concept:"", illustration:"", tool:"" }, "23-42":{ concept:"", illustration:"", tool:"" },
-            "23-43":{ concept:"", illustration:"", tool:"" }, "23-44":{ concept:"", illustration:"", tool:"" }
+            "23-43":{ concept:"", illustration:"", tool:"" }, "23-44":{ concept:"", illustration:"", tool:"" },
+            // Section 24: Mathematical Modeling
+            "24-1":{ concept:"", illustration:"", tool:"" }, "24-2":{ concept:"", illustration:"", tool:"" },
+            "24-3":{ concept:"", illustration:"", tool:"" }, "24-4":{ concept:"", illustration:"", tool:"" },
+            "24-5":{ concept:"", illustration:"", tool:"" }, "24-6":{ concept:"", illustration:"", tool:"" },
+            "24-7":{ concept:"", illustration:"", tool:"" }, "24-8":{ concept:"", illustration:"", tool:"" },
+            "24-9":{ concept:"", illustration:"", tool:"" }, "24-10":{ concept:"", illustration:"", tool:"" },
+            "24-11":{ concept:"", illustration:"", tool:"" }, "24-12":{ concept:"", illustration:"", tool:"" },
+            "24-13":{ concept:"", illustration:"", tool:"" }, "24-14":{ concept:"", illustration:"", tool:"" },
+            "24-15":{ concept:"", illustration:"", tool:"" }, "24-16":{ concept:"", illustration:"", tool:"" }
         };
 
         const externalTools = { "1-2":true, "2-2":true, "2-3":true, "9-1":true, "10-4":true };
@@ -1097,7 +1125,6 @@
             "19-1":{ title:"INTERVENTION TARGETING & MIXES" },
             "20-1":{ title:"PRIORITIZATION DECISION TREE" },
             "21-1":{ title:"SNT COSTING CALCULATOR" },
-            // Section 22
             "22-1":{ title:"FREQUENCY TABLES" }, "22-2":{ title:"SUMMARY STATISTICS TABLE" },
             "22-3":{ title:"CROSS TABULATION" }, "22-4":{ title:"BAR CHART" },
             "22-5":{ title:"HISTOGRAM" }, "22-6":{ title:"PIE & DONUT CHART" },
@@ -1108,51 +1135,45 @@
             "22-15":{ title:"RADAR / SPIDER CHART" }, "22-16":{ title:"TREEMAP" },
             "22-17":{ title:"FUNNEL CHART" }, "22-18":{ title:"DOT PLOT" },
             "22-19":{ title:"DENSITY PLOT" }, "22-20":{ title:"CUMULATIVE DISTRIBUTION PLOT" },
-            // Section 23
-            "23-1":{ title:"CHI-SQUARE GOODNESS OF FIT" },
-            "23-2":{ title:"CHI-SQUARE TEST OF INDEPENDENCE" },
-            "23-3":{ title:"FISHER'S EXACT TEST" },
-            "23-4":{ title:"FISHER'S GOODNESS OF FIT" },
-            "23-5":{ title:"McNEMAR'S TEST" },
-            "23-6":{ title:"MANN-WHITNEY U TEST" },
-            "23-7":{ title:"WILCOXON SIGNED-RANK TEST" },
-            "23-8":{ title:"KRUSKAL-WALLIS TEST" },
-            "23-9":{ title:"ONE-SAMPLE T-TEST" },
-            "23-10":{ title:"INDEPENDENT TWO-SAMPLE T-TEST" },
-            "23-11":{ title:"PAIRED SAMPLES T-TEST" },
-            "23-12":{ title:"ONE-WAY ANOVA" },
-            "23-13":{ title:"TWO-WAY ANOVA" },
-            "23-14":{ title:"THREE-WAY ANOVA" },
-            "23-15":{ title:"REPEATED MEASURES ANOVA" },
-            "23-16":{ title:"MANOVA" },
-            "23-17":{ title:"ANCOVA" },
-            "23-18":{ title:"SIMPLE LINEAR REGRESSION" },
-            "23-19":{ title:"MULTIPLE LINEAR REGRESSION" },
-            "23-20":{ title:"SIMPLE LOGISTIC REGRESSION" },
-            "23-21":{ title:"MULTIPLE LOGISTIC REGRESSION" },
-            "23-22":{ title:"LASSO LOGISTIC REGRESSION" },
-            "23-23":{ title:"RIDGE & ELASTIC NET REGRESSION" },
-            "23-24":{ title:"MIXED EFFECTS LOGISTIC REGRESSION" },
-            "23-25":{ title:"MULTINOMIAL LOGISTIC REGRESSION" },
-            "23-26":{ title:"ORDINAL LOGISTIC REGRESSION" },
-            "23-27":{ title:"POISSON REGRESSION" },
-            "23-28":{ title:"NEGATIVE BINOMIAL REGRESSION" },
-            "23-29":{ title:"KAPLAN-MEIER SURVIVAL ANALYSIS" },
-            "23-30":{ title:"LOG-RANK TEST" },
-            "23-31":{ title:"COX PROPORTIONAL HAZARDS" },
-            "23-32":{ title:"ODDS RATIO & RISK RATIO" },
-            "23-33":{ title:"INTERRUPTED TIME SERIES (ITS)" },
-            "23-34":{ title:"DIFFERENCE-IN-DIFFERENCES (DiD)" },
-            "23-35":{ title:"PROPENSITY SCORE MATCHING" },
-            "23-36":{ title:"INSTRUMENTAL VARIABLE (IV)" },
-            "23-37":{ title:"MIXED EFFECTS LINEAR MODEL" },
-            "23-38":{ title:"MULTILEVEL (HIERARCHICAL) MODEL" },
-            "23-39":{ title:"PEARSON & SPEARMAN CORRELATION" },
-            "23-40":{ title:"PARTIAL CORRELATION" },
-            "23-41":{ title:"NORMALITY TESTS" },
-            "23-42":{ title:"LEVENE'S & BARTLETT'S TEST" },
-            "23-43":{ title:"POWER & SAMPLE SIZE CALCULATOR" },
-            "23-44":{ title:"META-ANALYSIS" }
+            "23-1":{ title:"CHI-SQUARE GOODNESS OF FIT" }, "23-2":{ title:"CHI-SQUARE TEST OF INDEPENDENCE" },
+            "23-3":{ title:"FISHER'S EXACT TEST" }, "23-4":{ title:"FISHER'S GOODNESS OF FIT" },
+            "23-5":{ title:"McNEMAR'S TEST" }, "23-6":{ title:"MANN-WHITNEY U TEST" },
+            "23-7":{ title:"WILCOXON SIGNED-RANK TEST" }, "23-8":{ title:"KRUSKAL-WALLIS TEST" },
+            "23-9":{ title:"ONE-SAMPLE T-TEST" }, "23-10":{ title:"INDEPENDENT TWO-SAMPLE T-TEST" },
+            "23-11":{ title:"PAIRED SAMPLES T-TEST" }, "23-12":{ title:"ONE-WAY ANOVA" },
+            "23-13":{ title:"TWO-WAY ANOVA" }, "23-14":{ title:"THREE-WAY ANOVA" },
+            "23-15":{ title:"REPEATED MEASURES ANOVA" }, "23-16":{ title:"MANOVA" },
+            "23-17":{ title:"ANCOVA" }, "23-18":{ title:"SIMPLE LINEAR REGRESSION" },
+            "23-19":{ title:"MULTIPLE LINEAR REGRESSION" }, "23-20":{ title:"SIMPLE LOGISTIC REGRESSION" },
+            "23-21":{ title:"MULTIPLE LOGISTIC REGRESSION" }, "23-22":{ title:"LASSO LOGISTIC REGRESSION" },
+            "23-23":{ title:"RIDGE & ELASTIC NET REGRESSION" }, "23-24":{ title:"MIXED EFFECTS LOGISTIC REGRESSION" },
+            "23-25":{ title:"MULTINOMIAL LOGISTIC REGRESSION" }, "23-26":{ title:"ORDINAL LOGISTIC REGRESSION" },
+            "23-27":{ title:"POISSON REGRESSION" }, "23-28":{ title:"NEGATIVE BINOMIAL REGRESSION" },
+            "23-29":{ title:"KAPLAN-MEIER SURVIVAL ANALYSIS" }, "23-30":{ title:"LOG-RANK TEST" },
+            "23-31":{ title:"COX PROPORTIONAL HAZARDS" }, "23-32":{ title:"ODDS RATIO & RISK RATIO" },
+            "23-33":{ title:"INTERRUPTED TIME SERIES (ITS)" }, "23-34":{ title:"DIFFERENCE-IN-DIFFERENCES (DiD)" },
+            "23-35":{ title:"PROPENSITY SCORE MATCHING" }, "23-36":{ title:"INSTRUMENTAL VARIABLE (IV)" },
+            "23-37":{ title:"MIXED EFFECTS LINEAR MODEL" }, "23-38":{ title:"MULTILEVEL (HIERARCHICAL) MODEL" },
+            "23-39":{ title:"PEARSON & SPEARMAN CORRELATION" }, "23-40":{ title:"PARTIAL CORRELATION" },
+            "23-41":{ title:"NORMALITY TESTS" }, "23-42":{ title:"LEVENE'S & BARTLETT'S TEST" },
+            "23-43":{ title:"POWER & SAMPLE SIZE CALCULATOR" }, "23-44":{ title:"META-ANALYSIS" },
+            // Section 24
+            "24-1":{ title:"SIR MODEL" },
+            "24-2":{ title:"SIRS MODEL" },
+            "24-3":{ title:"SIS MODEL" },
+            "24-4":{ title:"SEIR MODEL" },
+            "24-5":{ title:"SEIRS MODEL" },
+            "24-6":{ title:"SIRD MODEL" },
+            "24-7":{ title:"SEIRD MODEL" },
+            "24-8":{ title:"ROSS-MACDONALD MODEL" },
+            "24-9":{ title:"VECTOR-HOST (VBD) MODEL" },
+            "24-10":{ title:"AGE-STRUCTURED MODEL" },
+            "24-11":{ title:"MULTI-PATCH SPATIAL MODEL" },
+            "24-12":{ title:"STOCHASTIC SIR MODEL" },
+            "24-13":{ title:"BASIC REPRODUCTION NUMBER (R\u2080)" },
+            "24-14":{ title:"SENSITIVITY ANALYSIS (PRCC)" },
+            "24-15":{ title:"PARAMETER ESTIMATION & FITTING" },
+            "24-16":{ title:"EPIDEMIC THRESHOLD ANALYSIS" }
         };
 
         function goToSection(n) {
@@ -1209,17 +1230,16 @@
             extBtn.style.display = 'none';
             streamlitNotice.style.display = 'none';
 
-            const icons = { concept:'📖', illustration:'🎬', tool:'🛠️' };
+            const icons = { concept:'&#128214;', illustration:'&#127910;', tool:'&#128295;' };
             const texts = { concept:'Concept documentation not configured yet.', illustration:'Illustration/video not configured yet.', tool:'Tool URL not configured yet.' };
-            document.getElementById('placeholderIcon').textContent = icons[tabName];
+            document.getElementById('placeholderIcon').innerHTML = icons[tabName];
             document.getElementById('placeholderText').textContent = texts[tabName];
 
             if (!url || url.trim() === '') { placeholder.style.display = 'flex'; return; }
 
             if (tabName === 'tool' && externalTools[currentToolKey]) {
                 extBtn.style.display = 'flex';
-                // Show notice panel directly — don't attempt iframe (blocked by X-Frame-Options)
-                document.getElementById('noticeIcon').textContent = '🛠️';
+                document.getElementById('noticeIcon').textContent = '\uD83D\uDEE0\uFE0F';
                 document.getElementById('noticeTitle').textContent = toolInfo[currentToolKey] ? toolInfo[currentToolKey].title : 'External Tool';
                 document.getElementById('noticeText').textContent = 'This tool opens in a new browser tab.';
                 streamlitNotice.style.display = 'flex';
