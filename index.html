@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>2027 Sierra Leone Mass ITNs Digital Handbook</title>
     <meta name="description" content="Comprehensive digital handbook for mass ITN distribution campaign">
     <meta name="theme-color" content="#004080">
@@ -42,6 +45,12 @@
             50% { box-shadow: 0 4px 25px rgba(40,167,69,0.7); }
         }
         .pwa-install-btn:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 6px 25px rgba(40,167,69,0.6); }
+        .pwa-install-btn.installed {
+            background: linear-gradient(135deg, #004080 0%, #0056b3 100%);
+            box-shadow: 0 4px 15px rgba(0,64,128,0.4);
+            animation: none; cursor: default;
+        }
+        .pwa-install-btn.installed:hover { transform: none; }
         .page-container { width: 100%; max-width: 1200px; margin: 0 auto; }
         .page-header {
             background-color: #004080; color: #ffffff;
@@ -102,6 +111,7 @@
             border-radius: 8px; overflow: hidden;
             transition: all 0.2s ease; cursor: pointer;
             min-height: 140px; display: flex; flex-direction: column;
+            height: 100%;
         }
         .card:hover {
             transform: translateY(-3px);
@@ -110,7 +120,7 @@
         }
         .card-header {
             background-color: #004080; color: #ffffff;
-            padding: 15px; flex-grow: 1;
+            padding: 15px; flex: 1;
             display: flex; flex-direction: column; justify-content: center;
         }
         .card-number {
@@ -251,30 +261,42 @@
         @media (max-width: 1200px) { .cards-grid { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 900px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 768px) {
-            body { padding: 10px; }
-            .page-header h1 { font-size: 22px; }
-            .cards-grid { grid-template-columns: repeat(2, 1fr); }
-            .card { min-height: 100px; }
+            body { padding: 0; margin: 0; }
+            .page-container { width: 100%; max-width: 100%; }
+            .page-header { border-radius: 0; margin-bottom: 0; padding: 15px 10px; }
+            .page-header h1 { font-size: 20px; margin: 15px 0 8px; }
+            .section-nav-container { border-radius: 0; margin-bottom: 0; padding: 10px; }
+            .content-card { border-radius: 0; margin-bottom: 0; padding: 15px 10px; }
+            .page-footer { border-radius: 0; padding: 15px 10px; }
+            .cards-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 5px 0; }
+            .card { min-height: 120px; }
             .logo-row { flex-direction: column; gap: 15px; }
-            .section-tabs { gap: 4px; }
-            .section-tab { padding: 5px 8px; font-size: 9px; }
+            .section-tabs { gap: 4px; justify-content: flex-start; overflow-x: auto; padding: 5px; }
+            .section-tab { padding: 5px 8px; font-size: 8px; white-space: nowrap; flex-shrink: 0; }
             .nav-buttons { flex-direction: column; gap: 15px; }
             .nav-btn { width: 100%; justify-content: center; }
             .pwa-install-btn { font-size: 12px; padding: 10px 20px; }
-            .modal-tabs { flex-direction: column; }
-            .modal-tab { border-right: none; border-bottom: 1px solid #dee2e6; }
-            .modal-tab:last-child { border-bottom: none; }
-            .video-controls { flex-direction: column; }
-            .part-selector { width: 100%; }
+            .modal-tabs { flex-direction: row; overflow-x: auto; flex-wrap: nowrap; }
+            .modal-tab { padding: 10px 12px; font-size: 12px; white-space: nowrap; flex-shrink: 0; border-right: 1px solid #dee2e6; border-bottom: none; }
+            .modal-tab:last-child { border-right: none; }
+            .video-controls { flex-direction: row; overflow-x: auto; flex-wrap: nowrap; }
+            .part-selector { overflow-x: auto; flex-wrap: nowrap; display: flex; gap: 8px; }
+            .part-btn { flex-shrink: 0; }
         }
         @media (max-width: 480px) {
-            .cards-grid { grid-template-columns: 1fr; }
+            .cards-grid { grid-template-columns: repeat(2, 1fr); }
             .page-header h1 { font-size: 18px; }
+            .section-tab { font-size: 7px; padding: 4px 6px; }
+            .modal-tab { padding: 8px 10px; font-size: 11px; }
         }
     </style>
 </head>
 <body>
     <div class="page-container">
+        <div id="updateNotification" style="display:none; position:fixed; top:20px; right:20px; background:#28a745; color:#ffffff; padding:15px 25px; border-radius:8px; box-shadow:0 4px 20px rgba(0,0,0,0.2); z-index:10000; font-size:14px; gap:10px; align-items:center;">
+            New version available! 
+            <button onclick="location.reload()" style="margin-left:10px; padding:5px 15px; border:none; background:#fff; color:#28a745; border-radius:4px; cursor:pointer; font-weight:700;">UPDATE</button>
+        </div>
         <div class="page-header">
             <div class="logo-row">
                 <div class="logo-box">
@@ -499,6 +521,53 @@
         let currentToolKey = '';
         let currentTab = 'concept';
 
+        // Force page refresh to check for updates on every load
+        window.addEventListener('load', function() {
+            // Check for service worker updates
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    registrations.forEach(reg => {
+                        // Force update check every time page loads
+                        reg.update().catch(e => console.log('SW update check error:', e));
+                        
+                        reg.addEventListener('updatefound', () => {
+                            const newWorker = reg.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New service worker is ready, show update notification
+                                    showUpdateNotification(() => {
+                                        newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                        window.location.reload();
+                                    });
+                                }
+                            });
+                        });
+                    });
+                });
+            }
+        });
+
+        function showUpdateNotification(onUpdate) {
+            const notification = document.getElementById('updateNotification');
+            if (notification) {
+                notification.style.display = 'flex';
+                const btn = notification.querySelector('button');
+                if (btn) btn.onclick = onUpdate;
+            }
+        }
+
+        // Auto-refresh when app comes to foreground
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                // Check for updates when user returns to page
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.getRegistrations().then(registrations => {
+                        registrations.forEach(reg => reg.update().catch(e => console.log('SW update:', e)));
+                    });
+                }
+            }
+        });
+
         const sectionNames = {
             1: "CAMPAIGN OVERVIEW",
             2: "STANDARD OPERATING PROCEDURES",
@@ -637,11 +706,28 @@
             document.getElementById('modalNumber').textContent = currentToolKey.split('-')[1];
             document.getElementById('modalTitleText').textContent = info.title;
             document.getElementById('placeholderTitle').textContent = info.title;
+            
+            // Show/hide tabs based on available content
+            const urls = toolUrls[currentToolKey];
+            document.getElementById('tabConcept').style.display = urls && urls.concept ? 'flex' : 'none';
+            document.getElementById('tabIllustration').style.display = urls && urls.illustration && Object.keys(urls.illustration).length > 0 ? 'flex' : 'none';
+            document.getElementById('tabTool').style.display = urls && urls.tool ? 'flex' : 'none';
+            
+            // Set active tab to first available
+            let activeTab = 'concept';
+            if (!urls || !urls.concept) {
+                if (urls && urls.illustration && Object.keys(urls.illustration).length > 0) activeTab = 'illustration';
+                else if (urls && urls.tool) activeTab = 'tool';
+            }
+            
             document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('tabConcept').classList.add('active');
+            const activeTabElement = document.getElementById('tab' + activeTab.charAt(0).toUpperCase() + activeTab.slice(1));
+            if (activeTabElement) activeTabElement.classList.add('active');
+            currentTab = activeTab;
+            
             document.getElementById('dynamicModal').classList.add('active');
             document.body.style.overflow = 'hidden';
-            loadTabContent('concept');
+            loadTabContent(currentTab);
         }
 
         function switchTab(tabName) {
@@ -720,13 +806,14 @@
             if (!url || url.trim() === '') return '';
             
             const lowerUrl = url.toLowerCase();
+            const cacheBuster = '?t=' + new Date().getTime();
             
-            // For PDFs: embed directly
+            // For PDFs: embed directly with cache buster
             if (lowerUrl.endsWith('.pdf')) {
-                return url;
+                return url + cacheBuster;
             }
             
-            // For PPT files: use Google Docs Viewer
+            // For PPT files: use Google Docs Viewer with cache buster
             if (lowerUrl.endsWith('.pptx') || lowerUrl.endsWith('.ppt') || lowerUrl.endsWith('.odp')) {
                 return 'https://docs.google.com/viewer?url=' + encodeURIComponent(url) + '&embedded=true';
             }
@@ -741,8 +828,8 @@
                 return 'https://docs.google.com/viewer?url=' + encodeURIComponent(url) + '&embedded=true';
             }
             
-            // For other HTML/web content, return as-is
-            return url;
+            // For other HTML/web content, add cache buster
+            return url + (url.indexOf('?') > -1 ? '&' : '?') + 't=' + new Date().getTime();
         }
 
         function playVideo(part, videoUrl) {
@@ -794,8 +881,10 @@
         });
 
         window.addEventListener('beforeinstallprompt', e => {
-            e.preventDefault(); deferredPrompt = e;
-            document.getElementById('pwaInstallBtn').style.display = 'block';
+            e.preventDefault(); 
+            deferredPrompt = e;
+            const installBtn = document.getElementById('pwaInstallBtn');
+            if (installBtn) installBtn.style.display = 'inline-block';
         });
 
         function installPWA() {
@@ -803,7 +892,10 @@
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then(r => {
-                    if (r.outcome === 'accepted') { btn.innerHTML = 'INSTALLED'; btn.classList.add('installed'); }
+                    if (r.outcome === 'accepted') { 
+                        btn.innerHTML = 'INSTALLED'; 
+                        btn.classList.add('installed'); 
+                    }
                     deferredPrompt = null;
                 });
             }
@@ -811,7 +903,11 @@
 
         if (window.matchMedia('(display-mode: standalone)').matches) {
             const btn = document.getElementById('pwaInstallBtn');
-            btn.style.display = 'block'; btn.innerHTML = 'INSTALLED'; btn.classList.add('installed');
+            if (btn) {
+                btn.style.display = 'inline-block'; 
+                btn.innerHTML = 'INSTALLED'; 
+                btn.classList.add('installed');
+            }
         }
     </script>
 </body>
