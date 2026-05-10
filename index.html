@@ -475,8 +475,7 @@
                         <div class="loading-spinner"></div>
                         <div class="loading-text">Loading content...</div>
                     </div>
-                    <iframe id="modalIframe" src="" style="display:none;"></iframe>
-                    <embed id="pdfViewer" type="application/pdf" style="display:none; width:100%; height:100%;">
+                    <iframe id="modalIframe" src="" style="display:none;" allow="fullscreen"></iframe>
                     <div id="videoPlayer" style="display:none; width:100%; height:100%; background:#000;">
                         <div class="video-controls">
                             <div class="part-selector" id="partSelector"></div>
@@ -682,17 +681,13 @@
                 const conceptUrl = urls.concept;
                 if (!conceptUrl || conceptUrl.trim() === '') { placeholder.style.display = 'flex'; return; }
                 
-                if (conceptUrl.toLowerCase().endsWith('.pdf')) {
-                    pdfViewer.src = conceptUrl;
-                    pdfViewer.style.display = 'block';
-                    extBtn.style.display = 'flex';
-                } else {
-                    loading.style.display = 'flex';
-                    iframe.onload = function() { loading.style.display = 'none'; iframe.style.display = 'block'; };
-                    iframe.onerror = function() { loading.style.display = 'none'; placeholder.style.display = 'flex'; };
-                    iframe.src = conceptUrl;
-                    extBtn.style.display = 'flex';
-                }
+                // Handle PDF, PPT, and other files in iframe
+                const iframeSrc = getIframeSrc(conceptUrl);
+                loading.style.display = 'flex';
+                iframe.onload = function() { loading.style.display = 'none'; iframe.style.display = 'block'; };
+                iframe.onerror = function() { loading.style.display = 'none'; placeholder.style.display = 'flex'; };
+                iframe.src = iframeSrc;
+                extBtn.style.display = 'flex';
             } else if (tabName === 'illustration') {
                 const videos = urls.illustration;
                 if (!videos || Object.keys(videos).length === 0) { placeholder.style.display = 'flex'; return; }
@@ -719,6 +714,35 @@
                 iframe.src = toolUrl;
                 extBtn.style.display = 'flex';
             }
+        }
+
+        function getIframeSrc(url) {
+            if (!url || url.trim() === '') return '';
+            
+            const lowerUrl = url.toLowerCase();
+            
+            // For PDFs: embed directly
+            if (lowerUrl.endsWith('.pdf')) {
+                return url;
+            }
+            
+            // For PPT files: use Google Docs Viewer
+            if (lowerUrl.endsWith('.pptx') || lowerUrl.endsWith('.ppt') || lowerUrl.endsWith('.odp')) {
+                return 'https://docs.google.com/viewer?url=' + encodeURIComponent(url) + '&embedded=true';
+            }
+            
+            // For Word documents: use Google Docs Viewer
+            if (lowerUrl.endsWith('.docx') || lowerUrl.endsWith('.doc') || lowerUrl.endsWith('.odt')) {
+                return 'https://docs.google.com/viewer?url=' + encodeURIComponent(url) + '&embedded=true';
+            }
+            
+            // For Excel files: use Google Docs Viewer
+            if (lowerUrl.endsWith('.xlsx') || lowerUrl.endsWith('.xls') || lowerUrl.endsWith('.ods')) {
+                return 'https://docs.google.com/viewer?url=' + encodeURIComponent(url) + '&embedded=true';
+            }
+            
+            // For other HTML/web content, return as-is
+            return url;
         }
 
         function playVideo(part, videoUrl) {
