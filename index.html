@@ -309,16 +309,19 @@
         .video-viewer { width: 100%; height: 100%; }
         .video-controls {
             background: #f8f9fa; padding: 15px; border-bottom: 1px solid #dee2e6;
-            display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+            display: flex; gap: 10px; align-items: center;
+            justify-content: center;
         }
         .part-selector {
             display: flex; gap: 8px; align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         .part-btn {
-            padding: 8px 15px; border: 2px solid #004080;
+            padding: 8px 20px; border: 2px solid #004080;
             background: #f8f9fa; color: #004080;
             border-radius: 6px; cursor: pointer; font-weight: 700;
-            transition: all 0.2s ease; font-size: 12px;
+            transition: all 0.2s ease; font-size: 13px;
         }
         .part-btn.active {
             background: #004080; color: #ffffff;
@@ -326,7 +329,18 @@
         .part-btn:hover {
             background: #e7f3ff;
         }
-        video { width: 100%; height: 100%; object-fit: contain; }
+        video { 
+            width: 100%; 
+            height: calc(100% - 70px); 
+            object-fit: contain; 
+            background: #000;
+        }
+        .video-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: #000;
+        }
         .page-footer {
             background-color: #004080; color: #ffffff;
             padding: 20px 30px; text-align: center;
@@ -359,7 +373,7 @@
             .modal-tab:last-child { border-right: none; }
             .video-controls { flex-direction: row; overflow-x: auto; flex-wrap: nowrap; }
             .part-selector { overflow-x: auto; flex-wrap: nowrap; display: flex; gap: 8px; }
-            .part-btn { flex-shrink: 0; }
+            .part-btn { flex-shrink: 0; padding: 8px 15px; font-size: 11px; }
         }
         @media (max-width: 480px) {
             .cards-grid { grid-template-columns: repeat(2, 1fr); }
@@ -424,7 +438,6 @@
                 <div class="cards-grid" id="grid-section1"></div>
                 <div class="nav-buttons"><button class="nav-btn back-btn" disabled>BACK</button><span class="nav-indicator">Section 1 of 10</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
-            <!-- Sections 2-10 similarly, we'll populate with JS for consistency -->
             <div id="dynamicSections"></div>
         </div>
 
@@ -444,12 +457,11 @@
                 <div class="modal-header-buttons"><button class="open-external-btn" id="openExternalBtn" onclick="openInNewTab()" style="display:none;">OPEN IN NEW TAB</button><button class="close-btn" onclick="closeModal()">✕</button></div>
             </div>
             <div class="modal-tabs"><button class="modal-tab active" id="tabConcept" onclick="switchTab('concept')"><span class="tab-icon">📄</span> CONCEPT</button><button class="modal-tab" id="tabIllustration" onclick="switchTab('illustration')"><span class="tab-icon">🎥</span> VIDEOS</button><button class="modal-tab" id="tabTool" onclick="switchTab('tool')"><span class="tab-icon">🔧</span> TOOL</button></div>
-            <div class="modal-body"><div class="iframe-container"><div class="loading-container" id="loadingContainer" style="display:none;"><div class="loading-spinner"></div><div class="loading-text">Loading content...</div></div><iframe id="modalIframe" src="" style="display:none;" allow="fullscreen"></iframe><div id="videoPlayer" style="display:none; width:100%; height:100%; background:#000;"><div class="video-controls"><div class="part-selector" id="partSelector"></div></div><video id="videoElement" controls style="width:100%; height:calc(100% - 60px); object-fit: contain;"></video></div><div class="placeholder-message" id="modalPlaceholder"><div class="placeholder-icon" id="placeholderIcon">📄</div><h3 id="placeholderTitle">Content Not Available</h3><p id="placeholderText">URL not configured yet for this tab.</p></div></div></div>
+            <div class="modal-body"><div class="iframe-container"><div class="loading-container" id="loadingContainer" style="display:none;"><div class="loading-spinner"></div><div class="loading-text">Loading content...</div></div><iframe id="modalIframe" src="" style="display:none;" allow="fullscreen"></iframe><div id="videoPlayer" style="display:none; width:100%; height:100%; background:#000; flex-direction:column;"><div class="video-controls"><div class="part-selector" id="partSelector"></div></div><video id="videoElement" controls style="width:100%; height:calc(100% - 70px); object-fit: contain;"></video></div><div class="placeholder-message" id="modalPlaceholder"><div class="placeholder-icon" id="placeholderIcon">📄</div><h3 id="placeholderTitle">Content Not Available</h3><p id="placeholderText">URL not configured yet for this tab.</p></div></div></div>
         </div>
     </div>
 
     <script>
-        // Complete card data - all 44 cards clickable with modal keys
         const sectionsData = {
             1: [{num:1,title:"CAMPAIGN BACKGROUND",desc:"Context, rationale, and strategic objectives",key:"1-1"},{num:2,title:"TARGET POPULATION",desc:"Coverage targets and beneficiary identification",key:"1-2"},{num:3,title:"CAMPAIGN TIMELINE",desc:"Key milestones and implementation schedule",key:"1-3"},{num:4,title:"STAKEHOLDERS & ROLES",desc:"Key partners and their responsibilities",key:"1-4"}],
             2: [{num:1,title:"REGISTRATION SOP",desc:"Household and beneficiary registration process",key:"2-1"},{num:2,title:"DISTRIBUTION SOP",desc:"ITN distribution to registered households",key:"2-2"},{num:3,title:"QA/QC SOP",desc:"Quality assurance and control procedures",key:"2-3"},{num:4,title:"DATA MANAGEMENT SOP",desc:"Data collection and verification protocols",key:"2-4"},{num:5,title:"LOGISTICS SOP",desc:"Supply chain and inventory management",key:"2-5"},{num:6,title:"REPORTING SOP",desc:"Daily and periodic reporting procedures",key:"2-6"}],
@@ -463,7 +475,6 @@
             10: [{num:1,title:"COMMON CHALLENGES",desc:"Problem-solving guide and mitigation",key:"10-1"},{num:2,title:"FREQUENTLY ASKED QUESTIONS",desc:"Q&A for staff and communities",key:"10-2"},{num:3,title:"ESCALATION PROCEDURES",desc:"Issue reporting and resolution",key:"10-3"},{num:4,title:"RESOURCE CONTACTS",desc:"Emergency contacts and support",key:"10-4"}]
         };
 
-        // Tool URLs (all cards have clickable modals with demo placeholder content)
         const toolUrls = {};
         for(let s=1;s<=10;s++) {
             sectionsData[s].forEach(card => {
@@ -604,9 +615,16 @@
             const loading = document.getElementById('loadingContainer');
             const extBtn = document.getElementById('openExternalBtn');
             const partSelector = document.getElementById('partSelector');
-            iframe.style.display = 'none'; videoPlayer.style.display = 'none'; placeholder.style.display = 'none'; loading.style.display = 'none'; extBtn.style.display = 'none';
+            
+            iframe.style.display = 'none'; 
+            videoPlayer.style.display = 'none'; 
+            placeholder.style.display = 'none'; 
+            loading.style.display = 'none'; 
+            extBtn.style.display = 'none';
+            
             const urls = toolUrls[currentToolKey];
             if(!urls) { placeholder.style.display='flex'; return; }
+            
             if(tabName === 'concept') {
                 const url = urls.concept;
                 if(!url) { placeholder.style.display='flex'; return; }
@@ -653,13 +671,28 @@
             else if(currentTab==='tool') url=urls?.tool;
             if(url) window.open(url,'_blank');
         }
-        function closeModal() { document.getElementById('dynamicModal').classList.remove('active'); document.body.style.overflow='auto'; iframeCleanup(); }
-        function iframeCleanup() { const iframe=document.getElementById('modalIframe'); if(iframe) iframe.src=''; const vid=document.getElementById('videoElement'); if(vid) vid.src=''; }
+        function closeModal() { 
+            document.getElementById('dynamicModal').classList.remove('active'); 
+            document.body.style.overflow='auto'; 
+            const iframe=document.getElementById('modalIframe'); 
+            if(iframe) iframe.src=''; 
+            const vid=document.getElementById('videoElement'); 
+            if(vid) { vid.pause(); vid.src=''; }
+        }
         function closeModalOnOutsideClick(e) { if(e.target.classList.contains('modal')) closeModal(); }
-        document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); if(!document.querySelector('.modal.active')){ if(e.key==='ArrowRight') nextSection(); else if(e.key==='ArrowLeft') prevSection(); } });
+        
+        document.addEventListener('keydown', e=>{ 
+            if(e.key==='Escape') closeModal(); 
+            if(!document.querySelector('.modal.active')){ 
+                if(e.key==='ArrowRight') nextSection(); 
+                else if(e.key==='ArrowLeft') prevSection(); 
+            } 
+        });
+        
         window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); deferredPrompt=e; const btn=document.getElementById('pwaInstallBtn'); if(btn) btn.style.display='inline-block'; });
         function installPWA() { if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt.userChoice.then(r=>{ if(r.outcome==='accepted'){ const btn=document.getElementById('pwaInstallBtn'); if(btn){ btn.innerHTML='INSTALLED'; btn.classList.add('installed'); } } deferredPrompt=null; }); } }
         if(window.matchMedia('(display-mode: standalone)').matches){ const btn=document.getElementById('pwaInstallBtn'); if(btn){ btn.style.display='inline-block'; btn.innerHTML='INSTALLED'; btn.classList.add('installed'); } }
+        
         generateAllSections();
         initializeSectionMenu();
         updateSectionDisplay();
