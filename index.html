@@ -1,8 +1,8 @@
-<!DOCTYPE html>    
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -26,7 +26,7 @@
             font-weight: 700;
         }
         .pwa-install-btn {
-            display: none;
+            display: inline-block;
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: #ffffff;
             padding: 12px 28px;
@@ -67,6 +67,82 @@
         .section-nav-container {
             background: #ffffff; border: 2px solid #004080;
             border-radius: 8px; padding: 15px 20px; margin-bottom: 10px;
+        }
+        .section-menu-mobile {
+            display: none;
+            background: #004080;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .section-menu-toggle {
+            background: #004080;
+            color: #ffffff;
+            border: none;
+            padding: 15px 20px;
+            width: 100%;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Oswald', Arial, sans-serif;
+            letter-spacing: 0.5px;
+        }
+        .section-menu-toggle:hover {
+            background: #0056b3;
+        }
+        .section-menu-toggle .dropdown-icon {
+            transition: transform 0.3s ease;
+            font-size: 18px;
+        }
+        .section-menu-toggle.expanded .dropdown-icon {
+            transform: rotate(180deg);
+        }
+        .section-menu-items {
+            display: none;
+            background: #f8f9fa;
+            max-height: 400px;
+            overflow-y: auto;
+            border-top: 2px solid #004080;
+        }
+        .section-menu-items.expanded {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 400px;
+            }
+        }
+        .section-menu-item {
+            padding: 12px 20px;
+            border-bottom: 1px solid #dee2e6;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            color: #004080;
+            transition: all 0.2s ease;
+            font-family: 'Oswald', Arial, sans-serif;
+            letter-spacing: 0.3px;
+        }
+        .section-menu-item:last-child {
+            border-bottom: none;
+        }
+        .section-menu-item:hover {
+            background: #e7f3ff;
+            padding-left: 25px;
+        }
+        .section-menu-item.active {
+            background: #004080;
+            color: #ffffff;
         }
         .section-tabs { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin-bottom: 15px; }
         .section-tab {
@@ -230,7 +306,7 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .loading-text { font-size: 16px; color: #004080; font-weight: 700; }
-        .pdf-viewer, .video-viewer { width: 100%; height: 100%; }
+        .video-viewer { width: 100%; height: 100%; }
         .video-controls {
             background: #f8f9fa; padding: 15px; border-bottom: 1px solid #dee2e6;
             display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
@@ -271,6 +347,8 @@
             .cards-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 5px 0; }
             .card { min-height: 120px; }
             .logo-row { flex-direction: column; gap: 15px; }
+            #desktopTabs { display: none; }
+            .section-menu-mobile { display: block; }
             .section-tabs { gap: 4px; justify-content: flex-start; overflow-x: auto; padding: 5px; }
             .section-tab { padding: 5px 8px; font-size: 8px; white-space: nowrap; flex-shrink: 0; }
             .nav-buttons { flex-direction: column; gap: 15px; }
@@ -287,6 +365,8 @@
             .cards-grid { grid-template-columns: repeat(2, 1fr); }
             .page-header h1 { font-size: 18px; }
             .section-tab { font-size: 7px; padding: 4px 6px; }
+            .section-menu-toggle { padding: 12px 15px; font-size: 13px; }
+            .section-menu-item { padding: 10px 15px; font-size: 12px; }
             .modal-tab { padding: 8px 10px; font-size: 11px; }
         }
     </style>
@@ -311,7 +391,14 @@
         </div>
 
         <div class="section-nav-container">
-            <div class="section-tabs">
+            <div class="section-menu-mobile" id="sectionMenuMobile">
+                <button class="section-menu-toggle" id="sectionMenuToggle" onclick="toggleSectionMenu()">
+                    <span id="currentSectionName">1. CAMPAIGN OVERVIEW</span>
+                    <span class="dropdown-icon">▼</span>
+                </button>
+                <div class="section-menu-items" id="sectionMenuItems"></div>
+            </div>
+            <div class="section-tabs" id="desktopTabs">
                 <div class="section-tab active" onclick="goToSection(1)">1. CAMPAIGN OVERVIEW</div>
                 <div class="section-tab" onclick="goToSection(2)">2. STANDARD OPERATING PROCEDURES</div>
                 <div class="section-tab" onclick="goToSection(3)">3. TRAINING MATERIALS</div>
@@ -330,585 +417,257 @@
         </div>
 
         <div class="content-card">
-
-            <!-- SECTION 1 -->
+            <!-- Section 1 -->
             <div class="section-content active" id="section1">
                 <div class="section-title-bar"><span class="section-number">1</span><span class="section-title">CAMPAIGN OVERVIEW</span></div>
                 <div class="data-flow-intro"><p>High-level overview of the 2027 mass ITN distribution campaign, objectives, targets, timeline, and key stakeholders.</p></div>
-                <div class="cards-grid">
-                    <div class="card" onclick="openModal('modal-1-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">CAMPAIGN BACKGROUND</div><div class="card-description">Context, rationale, and strategic objectives</div></div></div>
-                    <div class="card" onclick="openModal('modal-1-2')"><div class="card-header"><div class="card-number">2</div><div class="card-title">TARGET POPULATION</div><div class="card-description">Coverage targets and beneficiary identification</div></div></div>
-                    <div class="card" onclick="openModal('modal-1-3')"><div class="card-header"><div class="card-number">3</div><div class="card-title">CAMPAIGN TIMELINE</div><div class="card-description">Key milestones and implementation schedule</div></div></div>
-                    <div class="card" onclick="openModal('modal-1-4')"><div class="card-header"><div class="card-number">4</div><div class="card-title">STAKEHOLDERS & ROLES</div><div class="card-description">Key partners and their responsibilities</div></div></div>
-                </div>
+                <div class="cards-grid" id="grid-section1"></div>
                 <div class="nav-buttons"><button class="nav-btn back-btn" disabled>BACK</button><span class="nav-indicator">Section 1 of 10</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
             </div>
-
-            <!-- SECTION 2 -->
-            <div class="section-content" id="section2">
-                <div class="section-title-bar"><span class="section-number">2</span><span class="section-title">STANDARD OPERATING PROCEDURES</span></div>
-                <div class="data-flow-intro"><p>Detailed SOPs for all campaign operations including registration, distribution, tracking, and quality assurance.</p></div>
-                <div class="cards-grid">
-                    <div class="card" onclick="openModal('modal-2-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">REGISTRATION SOP</div><div class="card-description">Household and beneficiary registration process</div></div></div>
-                    <div class="card" onclick="openModal('modal-2-2')"><div class="card-header"><div class="card-number">2</div><div class="card-title">DISTRIBUTION SOP</div><div class="card-description">ITN distribution to registered households</div></div></div>
-                    <div class="card" onclick="openModal('modal-2-3')"><div class="card-header"><div class="card-number">3</div><div class="card-title">QA/QC SOP</div><div class="card-description">Quality assurance and control procedures</div></div></div>
-                    <div class="card" onclick="openModal('modal-2-4')"><div class="card-header"><div class="card-number">4</div><div class="card-title">DATA MANAGEMENT SOP</div><div class="card-description">Data collection and verification protocols</div></div></div>
-                    <div class="card" onclick="openModal('modal-2-5')"><div class="card-header"><div class="card-number">5</div><div class="card-title">LOGISTICS SOP</div><div class="card-description">Supply chain and inventory management</div></div></div>
-                    <div class="card" onclick="openModal('modal-2-6')"><div class="card-header"><div class="card-number">6</div><div class="card-title">REPORTING SOP</div><div class="card-description">Daily and periodic reporting procedures</div></div></div>
-                </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 2 of 10</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
-            </div>
-
-            <!-- SECTION 3 -->
-            <div class="section-content" id="section3">
-                <div class="section-title-bar"><span class="section-number">3</span><span class="section-title">TRAINING MATERIALS</span></div>
-                <div class="data-flow-intro"><p>Comprehensive training materials for all campaign staff including distributors, supervisors, and data clerks.</p></div>
-                <div class="cards-grid">
-                    <div class="card" onclick="openModal('modal-3-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">DISTRIBUTOR TRAINING</div><div class="card-description">Core competencies and field procedures</div></div></div>
-                    <div class="card" onclick="openModal('modal-3-2')"><div class="card-header"><div class="card-number">2</div><div class="card-title">SUPERVISOR TRAINING</div><div class="card-description">Supervisory and management skills</div></div></div>
-                    <div class="card" onclick="openModal('modal-3-3')"><div class="card-header"><div class="card-number">3</div><div class="card-title">DATA CLERK TRAINING</div><div class="card-description">Data entry and management protocols</div></div></div>
-                    <div class="card" onclick="openModal('modal-3-4')"><div class="card-header"><div class="card-number">4</div><div class="card-title">COMMUNITY MOBILIZER TRAINING</div><div class="card-description">Community engagement and sensitization</div></div></div>
-                    <div class="card" onclick="openModal('modal-3-5')"><div class="card-header"><div class="card-number">5</div><div class="card-title">HEALTH OFFICER TRAINING</div><div class="card-description">Clinical and coordination aspects</div></div></div>
-                </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 3 of 10</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
-            </div>
-
-            <!-- SECTION 4 -->
-            <div class="section-content" id="section4">
-                <div class="section-title-bar"><span class="section-number">4</span><span class="section-title">DATA COLLECTION & QA</span></div>
-                <div class="data-flow-intro"><p>Tools and procedures for data collection, validation, and quality assurance throughout the campaign.</p></div>
-                <div class="cards-grid">
-                    <div class="card" onclick="openModal('modal-4-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">DATA COLLECTION FORMS</div><div class="card-description">Registration and distribution forms</div></div></div>
-                    <div class="card" onclick="openModal('modal-4-2')"><div class="card-header"><div class="card-number">2</div><div class="card-title">DATA VALIDATION</div><div class="card-description">Data quality checks and corrections</div></div></div>
-                    <div class="card" onclick="openModal('modal-4-3')"><div class="card-header"><div class="card-number">3</div><div class="card-title">QA CHECKLISTS</div><div class="card-description">Quality assurance inspection tools</div></div></div>
-                    <div class="card" onclick="openModal('modal-4-4')"><div class="card-header"><div class="card-number">4</div><div class="card-title">PERFORMANCE DASHBOARDS</div><div class="card-description">Real-time campaign monitoring</div></div></div>
-                </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 4 of 10</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
-            </div>
-
-            <!-- SECTION 5 -->
-            <div class="section-content" id="section5">
-                <div class="section-title-bar"><span class="section-number">5</span><span class="section-title">IMPLEMENTATION GUIDE</span></div>
-                <div class="data-flow-intro"><p>Step-by-step guidance for campaign implementation at district, chiefdom, and community levels.</p></div>
-                <div class="cards-grid">
-                    <div class="card" onclick="openModal('modal-5-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">PRE-CAMPAIGN SETUP</div><div class="card-description">Preparatory activities and planning</div></div></div>
-                    <div class="card" onclick="openModal('modal-5-2')"><div class="card-header"><div class="card-number">2</div><div class="card-title">CAMPAIGN LAUNCH</div><div class="card-description">Kickoff and community sensitization</div></div></div>
-                    <div class="card" onclick="openModal('modal-5-3')"><div class="card-header"><div class="card-number">3</div><div class="card-title">DAILY OPERATIONS</div><div class="card-description">Field-level implementation procedures</div></div></div>
-                    <div class="card" onclick="openModal('modal-5-4')"><div class="card-header"><div class="card-number">4</div><div class="card-title">CAMPAIGN CLOSEOUT</div><div class="card-description">Final consolidation and reporting</div></div></div>
-                </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 5 of 10</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
-            </div>
-
-            <!-- SECTION 6 -->
-            <div class="section-content" id="section6">
-                <div class="section-title-bar"><span class="section-number">6</span><span class="section-title">MONITORING & EVALUATION</span></div>
-                <div class="data-flow-intro"><p>M&E frameworks, key indicators, and reporting mechanisms for campaign oversight and learning.</p></div>
-                <div class="cards-grid">
-                    <div class="card" onclick="openModal('modal-6-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">MONITORING FRAMEWORK</div><div class="card-description">Key indicators and tracking mechanisms</div></div></div>
-                    <div class="card" onclick="openModal('modal-6-2')"><div class="card-header"><div class="card-number">2</div><div class="card-title">EVALUATION PLAN</div><div class="card-description">Impact assessment and learning activities</div></div></div>
-                    <div class="card" onclick="openModal('modal-6-3')"><div class="card-header"><div class="card-number">3</div><div class="card-title">REPORTING TEMPLATES</div><div class="card-description">Weekly and monthly reports</div></div></div>
-                </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 6 of 10</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
-            </div>
-
-            <!-- SECTION 7 -->
-            <div class="section-content" id="section7">
-                <div class="section-title-bar"><span class="section-number">7</span><span class="section-title">DISTRIBUTION LOGISTICS</span></div>
-                <div class="data-flow-intro"><p>Logistics planning, supply chain management, and inventory control for ITN distribution.</p></div>
-                <div class="cards-grid">
-                    <div class="card" onclick="openModal('modal-7-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">SUPPLY CHAIN PLANNING</div><div class="card-description">ITN procurement and warehousing</div></div></div>
-                    <div class="card" onclick="openModal('modal-7-2')"><div class="card-header"><div class="card-number">2</div><div class="card-title">INVENTORY MANAGEMENT</div><div class="card-description">Stock tracking and distribution</div></div></div>
-                    <div class="card" onclick="openModal('modal-7-3')"><div class="card-header"><div class="card-number">3</div><div class="card-title">TRANSPORT COORDINATION</div><div class="card-description">ITN movement and delivery routes</div></div></div>
-                    <div class="card" onclick="openModal('modal-7-4')"><div class="card-header"><div class="card-number">4</div><div class="card-title">WASTE MANAGEMENT</div><div class="card-description">Packaging and waste disposal</div></div></div>
-                </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 7 of 10</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
-            </div>
-
-            <!-- SECTION 8 -->
-            <div class="section-content" id="section8">
-                <div class="section-title-bar"><span class="section-number">8</span><span class="section-title">STAFF MANAGEMENT</span></div>
-                <div class="data-flow-intro"><p>HR procedures, staff recruitment, performance management, and incentive structures.</p></div>
-                <div class="cards-grid">
-                    <div class="card" onclick="openModal('modal-8-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">RECRUITMENT GUIDE</div><div class="card-description">Staff selection and onboarding</div></div></div>
-                    <div class="card" onclick="openModal('modal-8-2')"><div class="card-header"><div class="card-number">2</div><div class="card-title">PERFORMANCE MANAGEMENT</div><div class="card-description">Supervision and accountability</div></div></div>
-                    <div class="card" onclick="openModal('modal-8-3')"><div class="card-header"><div class="card-number">3</div><div class="card-title">INCENTIVE SCHEMES</div><div class="card-description">Motivation and rewards</div></div></div>
-                    <div class="card" onclick="openModal('modal-8-4')"><div class="card-header"><div class="card-number">4</div><div class="card-title">SAFETY & WELFARE</div><div class="card-description">Staff protection and health</div></div></div>
-                </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 8 of 10</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
-            </div>
-
-            <!-- SECTION 9 -->
-            <div class="section-content" id="section9">
-                <div class="section-title-bar"><span class="section-number">9</span><span class="section-title">COMMUNITY ENGAGEMENT</span></div>
-                <div class="data-flow-intro"><p>Strategies for community mobilization, stakeholder engagement, and social behavior change communication.</p></div>
-                <div class="cards-grid">
-                    <div class="card" onclick="openModal('modal-9-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">COMMUNITY SENSITIZATION</div><div class="card-description">Awareness and education campaigns</div></div></div>
-                    <div class="card" onclick="openModal('modal-9-2')"><div class="card-header"><div class="card-number">2</div><div class="card-title">STAKEHOLDER COORDINATION</div><div class="card-description">Community leader engagement</div></div></div>
-                    <div class="card" onclick="openModal('modal-9-3')"><div class="card-header"><div class="card-number">3</div><div class="card-title">MESSAGING MATERIALS</div><div class="card-description">IEC materials and communication</div></div></div>
-                    <div class="card" onclick="openModal('modal-9-4')"><div class="card-header"><div class="card-number">4</div><div class="card-title">FEEDBACK MECHANISMS</div><div class="card-description">Community feedback and complaints</div></div></div>
-                </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 9 of 10</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
-            </div>
-
-            <!-- SECTION 10 -->
-            <div class="section-content" id="section10">
-                <div class="section-title-bar"><span class="section-number">10</span><span class="section-title">TROUBLESHOOTING & FAQ</span></div>
-                <div class="data-flow-intro"><p>Common issues, solutions, and frequently asked questions for field implementation.</p></div>
-                <div class="cards-grid">
-                    <div class="card" onclick="openModal('modal-10-1')"><div class="card-header"><div class="card-number">1</div><div class="card-title">COMMON CHALLENGES</div><div class="card-description">Problem-solving guide and mitigation</div></div></div>
-                    <div class="card" onclick="openModal('modal-10-2')"><div class="card-header"><div class="card-number">2</div><div class="card-title">FREQUENTLY ASKED QUESTIONS</div><div class="card-description">Q&A for staff and communities</div></div></div>
-                    <div class="card" onclick="openModal('modal-10-3')"><div class="card-header"><div class="card-number">3</div><div class="card-title">ESCALATION PROCEDURES</div><div class="card-description">Issue reporting and resolution</div></div></div>
-                    <div class="card" onclick="openModal('modal-10-4')"><div class="card-header"><div class="card-number">4</div><div class="card-title">RESOURCE CONTACTS</div><div class="card-description">Emergency contacts and support</div></div></div>
-                </div>
-                <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section 10 of 10</span><button class="nav-btn next-btn" disabled>COMPLETE</button></div>
-            </div>
-
-        </div><!-- end content-card -->
+            <!-- Sections 2-10 similarly, we'll populate with JS for consistency -->
+            <div id="dynamicSections"></div>
+        </div>
 
         <div class="page-footer">
             <p style="margin:0;">National Malaria Control Programme</p>
             <p>Ministry of Health and Sanitation, Sierra Leone</p>
             <p style="font-size:11px;">Medical Stores Compound, Freetown, Sierra Leone</p>
-            <p style="font-size:10px;">&#169; 2025 Informatics Consultancy Firm-Sierra Leone (ICF-SL)</p>
+            <p style="font-size:10px;">© 2025 Informatics Consultancy Firm-Sierra Leone (ICF-SL)</p>
         </div>
     </div>
 
-    <!-- Modal with Tabs -->
+    <!-- Modal -->
     <div id="dynamicModal" class="modal" onclick="closeModalOnOutsideClick(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <h2 id="modalTitle">
-                    <span class="card-number" id="modalNumber">1</span>
-                    <span id="modalTitleText">TOOL NAME</span>
-                </h2>
-                <div class="modal-header-buttons">
-                    <button class="open-external-btn" id="openExternalBtn" onclick="openInNewTab()" style="display:none;">OPEN IN NEW TAB</button>
-                    <button class="close-btn" onclick="closeModal()">&#215;</button>
-                </div>
+                <h2><span class="card-number" id="modalNumber">1</span><span id="modalTitleText">TOOL NAME</span></h2>
+                <div class="modal-header-buttons"><button class="open-external-btn" id="openExternalBtn" onclick="openInNewTab()" style="display:none;">OPEN IN NEW TAB</button><button class="close-btn" onclick="closeModal()">✕</button></div>
             </div>
-            <div class="modal-tabs">
-                <button class="modal-tab active" id="tabConcept" onclick="switchTab('concept')"><span class="tab-icon">📄</span> CONCEPT</button>
-                <button class="modal-tab" id="tabIllustration" onclick="switchTab('illustration')"><span class="tab-icon">🎥</span> VIDEOS</button>
-                <button class="modal-tab" id="tabTool" onclick="switchTab('tool')"><span class="tab-icon">🔧</span> TOOL</button>
-            </div>
-            <div class="modal-body">
-                <div class="iframe-container">
-                    <div class="loading-container" id="loadingContainer" style="display:none;">
-                        <div class="loading-spinner"></div>
-                        <div class="loading-text">Loading content...</div>
-                    </div>
-                    <iframe id="modalIframe" src="" style="display:none;" allow="fullscreen"></iframe>
-                    <div id="videoPlayer" style="display:none; width:100%; height:100%; background:#000;">
-                        <div class="video-controls">
-                            <div class="part-selector" id="partSelector"></div>
-                        </div>
-                        <video id="videoElement" controls style="width:100%; height:calc(100% - 60px); object-fit: contain;"></video>
-                    </div>
-                    <div class="placeholder-message" id="modalPlaceholder">
-                        <div class="placeholder-icon" id="placeholderIcon">📄</div>
-                        <h3 id="placeholderTitle">Content Not Available</h3>
-                        <p id="placeholderText">URL not configured yet for this tab.</p>
-                    </div>
-                </div>
-            </div>
+            <div class="modal-tabs"><button class="modal-tab active" id="tabConcept" onclick="switchTab('concept')"><span class="tab-icon">📄</span> CONCEPT</button><button class="modal-tab" id="tabIllustration" onclick="switchTab('illustration')"><span class="tab-icon">🎥</span> VIDEOS</button><button class="modal-tab" id="tabTool" onclick="switchTab('tool')"><span class="tab-icon">🔧</span> TOOL</button></div>
+            <div class="modal-body"><div class="iframe-container"><div class="loading-container" id="loadingContainer" style="display:none;"><div class="loading-spinner"></div><div class="loading-text">Loading content...</div></div><iframe id="modalIframe" src="" style="display:none;" allow="fullscreen"></iframe><div id="videoPlayer" style="display:none; width:100%; height:100%; background:#000;"><div class="video-controls"><div class="part-selector" id="partSelector"></div></div><video id="videoElement" controls style="width:100%; height:calc(100% - 60px); object-fit: contain;"></video></div><div class="placeholder-message" id="modalPlaceholder"><div class="placeholder-icon" id="placeholderIcon">📄</div><h3 id="placeholderTitle">Content Not Available</h3><p id="placeholderText">URL not configured yet for this tab.</p></div></div></div>
         </div>
     </div>
 
     <script>
+        // Complete card data - all 44 cards clickable with modal keys
+        const sectionsData = {
+            1: [{num:1,title:"CAMPAIGN BACKGROUND",desc:"Context, rationale, and strategic objectives",key:"1-1"},{num:2,title:"TARGET POPULATION",desc:"Coverage targets and beneficiary identification",key:"1-2"},{num:3,title:"CAMPAIGN TIMELINE",desc:"Key milestones and implementation schedule",key:"1-3"},{num:4,title:"STAKEHOLDERS & ROLES",desc:"Key partners and their responsibilities",key:"1-4"}],
+            2: [{num:1,title:"REGISTRATION SOP",desc:"Household and beneficiary registration process",key:"2-1"},{num:2,title:"DISTRIBUTION SOP",desc:"ITN distribution to registered households",key:"2-2"},{num:3,title:"QA/QC SOP",desc:"Quality assurance and control procedures",key:"2-3"},{num:4,title:"DATA MANAGEMENT SOP",desc:"Data collection and verification protocols",key:"2-4"},{num:5,title:"LOGISTICS SOP",desc:"Supply chain and inventory management",key:"2-5"},{num:6,title:"REPORTING SOP",desc:"Daily and periodic reporting procedures",key:"2-6"}],
+            3: [{num:1,title:"DISTRIBUTOR TRAINING",desc:"Core competencies and field procedures",key:"3-1"},{num:2,title:"SUPERVISOR TRAINING",desc:"Supervisory and management skills",key:"3-2"},{num:3,title:"DATA CLERK TRAINING",desc:"Data entry and management protocols",key:"3-3"},{num:4,title:"COMMUNITY MOBILIZER TRAINING",desc:"Community engagement and sensitization",key:"3-4"},{num:5,title:"HEALTH OFFICER TRAINING",desc:"Clinical and coordination aspects",key:"3-5"}],
+            4: [{num:1,title:"DATA COLLECTION FORMS",desc:"Registration and distribution forms",key:"4-1"},{num:2,title:"DATA VALIDATION",desc:"Data quality checks and corrections",key:"4-2"},{num:3,title:"QA CHECKLISTS",desc:"Quality assurance inspection tools",key:"4-3"},{num:4,title:"PERFORMANCE DASHBOARDS",desc:"Real-time campaign monitoring",key:"4-4"}],
+            5: [{num:1,title:"PRE-CAMPAIGN SETUP",desc:"Preparatory activities and planning",key:"5-1"},{num:2,title:"CAMPAIGN LAUNCH",desc:"Kickoff and community sensitization",key:"5-2"},{num:3,title:"DAILY OPERATIONS",desc:"Field-level implementation procedures",key:"5-3"},{num:4,title:"CAMPAIGN CLOSEOUT",desc:"Final consolidation and reporting",key:"5-4"}],
+            6: [{num:1,title:"MONITORING FRAMEWORK",desc:"Key indicators and tracking mechanisms",key:"6-1"},{num:2,title:"EVALUATION PLAN",desc:"Impact assessment and learning activities",key:"6-2"},{num:3,title:"REPORTING TEMPLATES",desc:"Weekly and monthly reports",key:"6-3"}],
+            7: [{num:1,title:"SUPPLY CHAIN PLANNING",desc:"ITN procurement and warehousing",key:"7-1"},{num:2,title:"INVENTORY MANAGEMENT",desc:"Stock tracking and distribution",key:"7-2"},{num:3,title:"TRANSPORT COORDINATION",desc:"ITN movement and delivery routes",key:"7-3"},{num:4,title:"WASTE MANAGEMENT",desc:"Packaging and waste disposal",key:"7-4"}],
+            8: [{num:1,title:"RECRUITMENT GUIDE",desc:"Staff selection and onboarding",key:"8-1"},{num:2,title:"PERFORMANCE MANAGEMENT",desc:"Supervision and accountability",key:"8-2"},{num:3,title:"INCENTIVE SCHEMES",desc:"Motivation and rewards",key:"8-3"},{num:4,title:"SAFETY & WELFARE",desc:"Staff protection and health",key:"8-4"}],
+            9: [{num:1,title:"COMMUNITY SENSITIZATION",desc:"Awareness and education campaigns",key:"9-1"},{num:2,title:"STAKEHOLDER COORDINATION",desc:"Community leader engagement",key:"9-2"},{num:3,title:"MESSAGING MATERIALS",desc:"IEC materials and communication",key:"9-3"},{num:4,title:"FEEDBACK MECHANISMS",desc:"Community feedback and complaints",key:"9-4"}],
+            10: [{num:1,title:"COMMON CHALLENGES",desc:"Problem-solving guide and mitigation",key:"10-1"},{num:2,title:"FREQUENTLY ASKED QUESTIONS",desc:"Q&A for staff and communities",key:"10-2"},{num:3,title:"ESCALATION PROCEDURES",desc:"Issue reporting and resolution",key:"10-3"},{num:4,title:"RESOURCE CONTACTS",desc:"Emergency contacts and support",key:"10-4"}]
+        };
+
+        // Tool URLs (all cards have clickable modals with demo placeholder content)
+        const toolUrls = {};
+        for(let s=1;s<=10;s++) {
+            sectionsData[s].forEach(card => {
+                toolUrls[card.key] = {
+                    concept: `https://via.placeholder.com/800x600?text=${encodeURIComponent(card.title)}+-+Concept+Document`,
+                    illustration: { "Training Video": `https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4` },
+                    tool: `https://via.placeholder.com/1200x800?text=${encodeURIComponent(card.title)}+-+Tool+Template`
+                };
+            });
+        }
+
+        const toolInfo = {};
+        for(let s=1;s<=10;s++) sectionsData[s].forEach(c => toolInfo[c.key] = { title: c.title });
+
         let deferredPrompt;
         let currentSection = 1;
         const totalSections = 10;
         let currentToolKey = '';
         let currentTab = 'concept';
 
-        // Force page refresh to check for updates on every load
-        window.addEventListener('load', function() {
-            // Check for service worker updates
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(registrations => {
-                    registrations.forEach(reg => {
-                        // Force update check every time page loads
-                        reg.update().catch(e => console.log('SW update check error:', e));
-                        
-                        reg.addEventListener('updatefound', () => {
-                            const newWorker = reg.installing;
-                            newWorker.addEventListener('statechange', () => {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    // New service worker is ready, show update notification
-                                    showUpdateNotification(() => {
-                                        newWorker.postMessage({ type: 'SKIP_WAITING' });
-                                        window.location.reload();
-                                    });
-                                }
-                            });
-                        });
-                    });
-                });
+        function generateAllSections() {
+            const container = document.getElementById('dynamicSections');
+            if(!container) return;
+            let html = '';
+            for(let s=2; s<=10; s++) {
+                const sectionCards = sectionsData[s];
+                if(!sectionCards) continue;
+                html += `<div class="section-content" id="section${s}">
+                    <div class="section-title-bar"><span class="section-number">${s}</span><span class="section-title">${getSectionName(s)}</span></div>
+                    <div class="data-flow-intro"><p>${getSectionDesc(s)}</p></div>
+                    <div class="cards-grid" id="grid-section${s}"></div>
+                    <div class="nav-buttons"><button class="nav-btn back-btn" onclick="prevSection()">BACK</button><span class="nav-indicator">Section ${s} of 10</span><button class="nav-btn next-btn" onclick="nextSection()">NEXT</button></div>
+                </div>`;
             }
-        });
-
-        function showUpdateNotification(onUpdate) {
-            const notification = document.getElementById('updateNotification');
-            if (notification) {
-                notification.style.display = 'flex';
-                const btn = notification.querySelector('button');
-                if (btn) btn.onclick = onUpdate;
-            }
-        }
-
-        // Auto-refresh when app comes to foreground
-        document.addEventListener('visibilitychange', function() {
-            if (document.visibilityState === 'visible') {
-                // Check for updates when user returns to page
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.getRegistrations().then(registrations => {
-                        registrations.forEach(reg => reg.update().catch(e => console.log('SW update:', e)));
-                    });
+            container.innerHTML = html;
+            for(let s=1;s<=10;s++) {
+                const grid = document.getElementById(`grid-section${s}`);
+                if(grid && sectionsData[s]) {
+                    grid.innerHTML = sectionsData[s].map(card => `
+                        <div class="card" onclick="openModal('modal-${card.key}')">
+                            <div class="card-header">
+                                <div class="card-number">${card.num}</div>
+                                <div class="card-title">${card.title}</div>
+                                <div class="card-description">${card.desc}</div>
+                            </div>
+                        </div>
+                    `).join('');
                 }
             }
-        });
-
-        const sectionNames = {
-            1: "CAMPAIGN OVERVIEW",
-            2: "STANDARD OPERATING PROCEDURES",
-            3: "TRAINING MATERIALS",
-            4: "DATA COLLECTION & QA",
-            5: "IMPLEMENTATION GUIDE",
-            6: "MONITORING & EVALUATION",
-            7: "DISTRIBUTION LOGISTICS",
-            8: "STAFF MANAGEMENT",
-            9: "COMMUNITY ENGAGEMENT",
-            10: "TROUBLESHOOTING & FAQ"
-        };
-
-        const toolUrls = {
-            // Section 1
-            "1-1": { concept: "", illustration: {}, tool: "" },
-            "1-2": { concept: "", illustration: {}, tool: "" },
-            "1-3": { concept: "", illustration: {}, tool: "" },
-            "1-4": { concept: "", illustration: {}, tool: "" },
-            // Section 2
-            "2-1": { concept: "", illustration: {}, tool: "" },
-            "2-2": { concept: "", illustration: {}, tool: "" },
-            "2-3": { concept: "", illustration: {}, tool: "" },
-            "2-4": { concept: "", illustration: {}, tool: "" },
-            "2-5": { concept: "", illustration: {}, tool: "" },
-            "2-6": { concept: "", illustration: {}, tool: "" },
-            // Section 3
-            "3-1": { concept: "", illustration: { "Part 1": "", "Part 2": "", "Part 3": "" }, tool: "" },
-            "3-2": { concept: "", illustration: { "Part 1": "", "Part 2": "" }, tool: "" },
-            "3-3": { concept: "", illustration: { "Part 1": "" }, tool: "" },
-            "3-4": { concept: "", illustration: { "Part 1": "", "Part 2": "" }, tool: "" },
-            "3-5": { concept: "", illustration: { "Part 1": "" }, tool: "" },
-            // Section 4
-            "4-1": { concept: "", illustration: {}, tool: "" },
-            "4-2": { concept: "", illustration: {}, tool: "" },
-            "4-3": { concept: "", illustration: {}, tool: "" },
-            "4-4": { concept: "", illustration: {}, tool: "" },
-            // Section 5
-            "5-1": { concept: "", illustration: {}, tool: "" },
-            "5-2": { concept: "", illustration: {}, tool: "" },
-            "5-3": { concept: "", illustration: {}, tool: "" },
-            "5-4": { concept: "", illustration: {}, tool: "" },
-            // Section 6
-            "6-1": { concept: "", illustration: {}, tool: "" },
-            "6-2": { concept: "", illustration: {}, tool: "" },
-            "6-3": { concept: "", illustration: {}, tool: "" },
-            // Section 7
-            "7-1": { concept: "", illustration: {}, tool: "" },
-            "7-2": { concept: "", illustration: {}, tool: "" },
-            "7-3": { concept: "", illustration: {}, tool: "" },
-            "7-4": { concept: "", illustration: {}, tool: "" },
-            // Section 8
-            "8-1": { concept: "", illustration: {}, tool: "" },
-            "8-2": { concept: "", illustration: {}, tool: "" },
-            "8-3": { concept: "", illustration: {}, tool: "" },
-            "8-4": { concept: "", illustration: {}, tool: "" },
-            // Section 9
-            "9-1": { concept: "", illustration: {}, tool: "" },
-            "9-2": { concept: "", illustration: {}, tool: "" },
-            "9-3": { concept: "", illustration: {}, tool: "" },
-            "9-4": { concept: "", illustration: {}, tool: "" },
-            // Section 10
-            "10-1": { concept: "", illustration: {}, tool: "" },
-            "10-2": { concept: "", illustration: {}, tool: "" },
-            "10-3": { concept: "", illustration: {}, tool: "" },
-            "10-4": { concept: "", illustration: {}, tool: "" }
-        };
-
-        const toolInfo = {
-            "1-1": { title: "CAMPAIGN BACKGROUND" },
-            "1-2": { title: "TARGET POPULATION" },
-            "1-3": { title: "CAMPAIGN TIMELINE" },
-            "1-4": { title: "STAKEHOLDERS & ROLES" },
-            "2-1": { title: "REGISTRATION SOP" },
-            "2-2": { title: "DISTRIBUTION SOP" },
-            "2-3": { title: "QA/QC SOP" },
-            "2-4": { title: "DATA MANAGEMENT SOP" },
-            "2-5": { title: "LOGISTICS SOP" },
-            "2-6": { title: "REPORTING SOP" },
-            "3-1": { title: "DISTRIBUTOR TRAINING" },
-            "3-2": { title: "SUPERVISOR TRAINING" },
-            "3-3": { title: "DATA CLERK TRAINING" },
-            "3-4": { title: "COMMUNITY MOBILIZER TRAINING" },
-            "3-5": { title: "HEALTH OFFICER TRAINING" },
-            "4-1": { title: "DATA COLLECTION FORMS" },
-            "4-2": { title: "DATA VALIDATION" },
-            "4-3": { title: "QA CHECKLISTS" },
-            "4-4": { title: "PERFORMANCE DASHBOARDS" },
-            "5-1": { title: "PRE-CAMPAIGN SETUP" },
-            "5-2": { title: "CAMPAIGN LAUNCH" },
-            "5-3": { title: "DAILY OPERATIONS" },
-            "5-4": { title: "CAMPAIGN CLOSEOUT" },
-            "6-1": { title: "MONITORING FRAMEWORK" },
-            "6-2": { title: "EVALUATION PLAN" },
-            "6-3": { title: "REPORTING TEMPLATES" },
-            "7-1": { title: "SUPPLY CHAIN PLANNING" },
-            "7-2": { title: "INVENTORY MANAGEMENT" },
-            "7-3": { title: "TRANSPORT COORDINATION" },
-            "7-4": { title: "WASTE MANAGEMENT" },
-            "8-1": { title: "RECRUITMENT GUIDE" },
-            "8-2": { title: "PERFORMANCE MANAGEMENT" },
-            "8-3": { title: "INCENTIVE SCHEMES" },
-            "8-4": { title: "SAFETY & WELFARE" },
-            "9-1": { title: "COMMUNITY SENSITIZATION" },
-            "9-2": { title: "STAKEHOLDER COORDINATION" },
-            "9-3": { title: "MESSAGING MATERIALS" },
-            "9-4": { title: "FEEDBACK MECHANISMS" },
-            "10-1": { title: "COMMON CHALLENGES" },
-            "10-2": { title: "FREQUENTLY ASKED QUESTIONS" },
-            "10-3": { title: "ESCALATION PROCEDURES" },
-            "10-4": { title: "RESOURCE CONTACTS" }
-        };
-
-        function goToSection(n) {
-            if (n < 1 || n > totalSections) return;
-            currentSection = n;
-            updateSectionDisplay();
         }
-        function nextSection() { if (currentSection < totalSections) { currentSection++; updateSectionDisplay(); } }
-        function prevSection() { if (currentSection > 1) { currentSection--; updateSectionDisplay(); } }
 
+        function getSectionName(s) {
+            const names = {2:"STANDARD OPERATING PROCEDURES",3:"TRAINING MATERIALS",4:"DATA COLLECTION & QA",5:"IMPLEMENTATION GUIDE",6:"MONITORING & EVALUATION",7:"DISTRIBUTION LOGISTICS",8:"STAFF MANAGEMENT",9:"COMMUNITY ENGAGEMENT",10:"TROUBLESHOOTING & FAQ"};
+            return names[s] || "";
+        }
+        function getSectionDesc(s) {
+            const descs = {2:"Detailed SOPs for all campaign operations including registration, distribution, tracking, and quality assurance.",3:"Comprehensive training materials for all campaign staff including distributors, supervisors, and data clerks.",4:"Tools and procedures for data collection, validation, and quality assurance throughout the campaign.",5:"Step-by-step guidance for campaign implementation at district, chiefdom, and community levels.",6:"M&E frameworks, key indicators, and reporting mechanisms for campaign oversight and learning.",7:"Logistics planning, supply chain management, and inventory control for ITN distribution.",8:"HR procedures, staff recruitment, performance management, and incentive structures.",9:"Strategies for community mobilization, stakeholder engagement, and social behavior change communication.",10:"Common issues, solutions, and frequently asked questions for field implementation."};
+            return descs[s] || "";
+        }
+
+        function initializeSectionMenu() {
+            const menuItems = document.getElementById('sectionMenuItems');
+            if (menuItems) {
+                menuItems.innerHTML = '';
+                for(let i=1;i<=10;i++) {
+                    const name = i===1?"CAMPAIGN OVERVIEW":getSectionName(i);
+                    const item = document.createElement('div');
+                    item.className = 'section-menu-item' + (i === currentSection ? ' active' : '');
+                    item.textContent = `${i}. ${name}`;
+                    item.onclick = () => { goToSection(i); closeSectionMenu(); };
+                    menuItems.appendChild(item);
+                }
+            }
+        }
+
+        function toggleSectionMenu() {
+            const menuItems = document.getElementById('sectionMenuItems');
+            const toggle = document.getElementById('sectionMenuToggle');
+            if (menuItems && toggle) {
+                menuItems.classList.toggle('expanded');
+                toggle.classList.toggle('expanded');
+            }
+        }
+        function closeSectionMenu() {
+            const menuItems = document.getElementById('sectionMenuItems');
+            const toggle = document.getElementById('sectionMenuToggle');
+            if(menuItems && toggle) { menuItems.classList.remove('expanded'); toggle.classList.remove('expanded'); }
+        }
         function updateSectionDisplay() {
             document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
             document.getElementById('section' + currentSection).classList.add('active');
-            document.querySelectorAll('.section-tab').forEach((t, i) => t.classList.toggle('active', i + 1 === currentSection));
+            document.querySelectorAll('.section-tab').forEach((t, i) => t.classList.toggle('active', i+1 === currentSection));
+            document.querySelectorAll('.section-menu-item').forEach((item, i) => item.classList.toggle('active', i+1 === currentSection));
+            const currentNameElem = document.getElementById('currentSectionName');
+            if(currentNameElem) currentNameElem.textContent = currentSection + '. ' + (currentSection===1?"CAMPAIGN OVERVIEW":getSectionName(currentSection));
             document.getElementById('progressFill').style.width = (currentSection / totalSections * 100) + '%';
-            document.getElementById('progressText').textContent = 'Section ' + currentSection + ' of ' + totalSections + ' | ' + sectionNames[currentSection];
-            document.querySelector('.content-card').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('progressText').textContent = `Section ${currentSection} of ${totalSections} | ${currentSection===1?"CAMPAIGN OVERVIEW":getSectionName(currentSection)}`;
+            closeSectionMenu();
         }
+        function goToSection(n) { if(n>=1 && n<=totalSections) { currentSection=n; updateSectionDisplay(); } }
+        function nextSection() { if(currentSection < totalSections) { currentSection++; updateSectionDisplay(); } }
+        function prevSection() { if(currentSection > 1) { currentSection--; updateSectionDisplay(); } }
 
         function openModal(modalId) {
             currentToolKey = modalId.replace('modal-', '');
             currentTab = 'concept';
             const info = toolInfo[currentToolKey];
-            if (!info) { console.error('Tool info not found:', currentToolKey); return; }
+            if(!info) return;
             document.getElementById('modalNumber').textContent = currentToolKey.split('-')[1];
             document.getElementById('modalTitleText').textContent = info.title;
             document.getElementById('placeholderTitle').textContent = info.title;
-            
-            // Show/hide tabs based on available content
             const urls = toolUrls[currentToolKey];
             document.getElementById('tabConcept').style.display = urls && urls.concept ? 'flex' : 'none';
-            document.getElementById('tabIllustration').style.display = urls && urls.illustration && Object.keys(urls.illustration).length > 0 ? 'flex' : 'none';
+            document.getElementById('tabIllustration').style.display = urls && urls.illustration && Object.keys(urls.illustration).length ? 'flex' : 'none';
             document.getElementById('tabTool').style.display = urls && urls.tool ? 'flex' : 'none';
-            
-            // Set active tab to first available
             let activeTab = 'concept';
-            if (!urls || !urls.concept) {
-                if (urls && urls.illustration && Object.keys(urls.illustration).length > 0) activeTab = 'illustration';
-                else if (urls && urls.tool) activeTab = 'tool';
-            }
-            
+            if((!urls || !urls.concept) && urls && urls.illustration && Object.keys(urls.illustration).length) activeTab = 'illustration';
+            else if((!urls || !urls.concept) && (!urls.illustration || !Object.keys(urls.illustration).length) && urls && urls.tool) activeTab = 'tool';
             document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
-            const activeTabElement = document.getElementById('tab' + activeTab.charAt(0).toUpperCase() + activeTab.slice(1));
-            if (activeTabElement) activeTabElement.classList.add('active');
+            const tabBtn = document.getElementById('tab'+activeTab.charAt(0).toUpperCase()+activeTab.slice(1));
+            if(tabBtn) tabBtn.classList.add('active');
             currentTab = activeTab;
-            
             document.getElementById('dynamicModal').classList.add('active');
             document.body.style.overflow = 'hidden';
             loadTabContent(currentTab);
         }
-
         function switchTab(tabName) {
             currentTab = tabName;
             document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('tab' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).classList.add('active');
+            document.getElementById('tab'+tabName.charAt(0).toUpperCase()+tabName.slice(1)).classList.add('active');
             loadTabContent(tabName);
         }
-
         function loadTabContent(tabName) {
             const iframe = document.getElementById('modalIframe');
-            const pdfViewer = document.getElementById('pdfViewer');
             const videoPlayer = document.getElementById('videoPlayer');
             const videoElement = document.getElementById('videoElement');
             const placeholder = document.getElementById('modalPlaceholder');
             const loading = document.getElementById('loadingContainer');
             const extBtn = document.getElementById('openExternalBtn');
             const partSelector = document.getElementById('partSelector');
-
-            // Hide all
-            iframe.style.display = 'none';
-            pdfViewer.style.display = 'none';
-            videoPlayer.style.display = 'none';
-            placeholder.style.display = 'none';
-            loading.style.display = 'none';
-            extBtn.style.display = 'none';
-
-            const icons = { concept: '📄', illustration: '🎥', tool: '🔧' };
-            const texts = { concept: 'Concept document not configured yet.', illustration: 'Videos not configured yet.', tool: 'Tool URL not configured yet.' };
-            document.getElementById('placeholderIcon').innerHTML = icons[tabName];
-            document.getElementById('placeholderText').textContent = texts[tabName];
-
+            iframe.style.display = 'none'; videoPlayer.style.display = 'none'; placeholder.style.display = 'none'; loading.style.display = 'none'; extBtn.style.display = 'none';
             const urls = toolUrls[currentToolKey];
-            if (!urls) { placeholder.style.display = 'flex'; return; }
-
-            if (tabName === 'concept') {
-                const conceptUrl = urls.concept;
-                if (!conceptUrl || conceptUrl.trim() === '') { placeholder.style.display = 'flex'; return; }
-                
-                // Handle PDF, PPT, and other files in iframe
-                const iframeSrc = getIframeSrc(conceptUrl);
-                loading.style.display = 'flex';
-                iframe.onload = function() { loading.style.display = 'none'; iframe.style.display = 'block'; };
-                iframe.onerror = function() { loading.style.display = 'none'; placeholder.style.display = 'flex'; };
-                iframe.src = iframeSrc;
-                extBtn.style.display = 'flex';
-            } else if (tabName === 'illustration') {
+            if(!urls) { placeholder.style.display='flex'; return; }
+            if(tabName === 'concept') {
+                const url = urls.concept;
+                if(!url) { placeholder.style.display='flex'; return; }
+                loading.style.display='flex';
+                iframe.onload = ()=>{ loading.style.display='none'; iframe.style.display='block'; };
+                iframe.onerror = ()=>{ loading.style.display='none'; placeholder.style.display='flex'; };
+                iframe.src = url + (url.includes('?')?'&_t=':'?_t=')+Date.now();
+                extBtn.style.display='flex';
+            } else if(tabName === 'illustration') {
                 const videos = urls.illustration;
-                if (!videos || Object.keys(videos).length === 0) { placeholder.style.display = 'flex'; return; }
-                
+                if(!videos || Object.keys(videos).length===0) { placeholder.style.display='flex'; return; }
                 partSelector.innerHTML = '';
                 Object.keys(videos).forEach((part, idx) => {
                     const btn = document.createElement('button');
-                    btn.className = 'part-btn' + (idx === 0 ? ' active' : '');
+                    btn.className = 'part-btn' + (idx===0?' active':'');
                     btn.textContent = part;
-                    btn.onclick = () => playVideo(part, videos[part]);
+                    btn.onclick = (e) => {
+                        document.querySelectorAll('.part-btn').forEach(b=>b.classList.remove('active'));
+                        btn.classList.add('active');
+                        videoElement.src = videos[part];
+                        videoElement.play();
+                    };
                     partSelector.appendChild(btn);
                 });
-                
-                const firstPart = Object.keys(videos)[0];
-                playVideo(firstPart, videos[firstPart]);
+                const firstKey = Object.keys(videos)[0];
+                videoElement.src = videos[firstKey];
                 videoPlayer.style.display = 'flex';
                 extBtn.style.display = 'flex';
-            } else if (tabName === 'tool') {
-                const toolUrl = urls.tool;
-                if (!toolUrl || toolUrl.trim() === '') { placeholder.style.display = 'flex'; return; }
-                loading.style.display = 'flex';
-                iframe.onload = function() { loading.style.display = 'none'; iframe.style.display = 'block'; };
-                iframe.onerror = function() { loading.style.display = 'none'; placeholder.style.display = 'flex'; };
-                iframe.src = toolUrl;
-                extBtn.style.display = 'flex';
+            } else if(tabName === 'tool') {
+                const url = urls.tool;
+                if(!url) { placeholder.style.display='flex'; return; }
+                loading.style.display='flex';
+                iframe.onload = ()=>{ loading.style.display='none'; iframe.style.display='block'; };
+                iframe.onerror = ()=>{ loading.style.display='none'; placeholder.style.display='flex'; };
+                iframe.src = url + (url.includes('?')?'&_t=':'?_t=')+Date.now();
+                extBtn.style.display='flex';
             }
         }
-
-        function getIframeSrc(url) {
-            if (!url || url.trim() === '') return '';
-            
-            const lowerUrl = url.toLowerCase();
-            const cacheBuster = '?t=' + new Date().getTime();
-            
-            // For PDFs: embed directly with cache buster
-            if (lowerUrl.endsWith('.pdf')) {
-                return url + cacheBuster;
-            }
-            
-            // For PPT files: use Google Docs Viewer with cache buster
-            if (lowerUrl.endsWith('.pptx') || lowerUrl.endsWith('.ppt') || lowerUrl.endsWith('.odp')) {
-                return 'https://docs.google.com/viewer?url=' + encodeURIComponent(url) + '&embedded=true';
-            }
-            
-            // For Word documents: use Google Docs Viewer
-            if (lowerUrl.endsWith('.docx') || lowerUrl.endsWith('.doc') || lowerUrl.endsWith('.odt')) {
-                return 'https://docs.google.com/viewer?url=' + encodeURIComponent(url) + '&embedded=true';
-            }
-            
-            // For Excel files: use Google Docs Viewer
-            if (lowerUrl.endsWith('.xlsx') || lowerUrl.endsWith('.xls') || lowerUrl.endsWith('.ods')) {
-                return 'https://docs.google.com/viewer?url=' + encodeURIComponent(url) + '&embedded=true';
-            }
-            
-            // For other HTML/web content, add cache buster
-            return url + (url.indexOf('?') > -1 ? '&' : '?') + 't=' + new Date().getTime();
-        }
-
-        function playVideo(part, videoUrl) {
-            if (!videoUrl || videoUrl.trim() === '') return;
-            
-            const videoElement = document.getElementById('videoElement');
-            const partButtons = document.querySelectorAll('.part-btn');
-            
-            partButtons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            videoElement.src = videoUrl;
-            videoElement.play();
-        }
-
         function openInNewTab() {
             const urls = toolUrls[currentToolKey];
-            let url = '';
-            
-            if (currentTab === 'concept') {
-                url = urls ? urls.concept : '';
-            } else if (currentTab === 'illustration') {
-                const videos = urls ? urls.illustration : {};
-                const firstPart = Object.keys(videos)[0];
-                url = firstPart ? videos[firstPart] : '';
-            } else if (currentTab === 'tool') {
-                url = urls ? urls.tool : '';
-            }
-            
-            if (url && url.trim() !== '') window.open(url, '_blank');
+            let url='';
+            if(currentTab==='concept') url=urls?.concept;
+            else if(currentTab==='illustration') { const videos=urls?.illustration; if(videos) url=Object.values(videos)[0]; }
+            else if(currentTab==='tool') url=urls?.tool;
+            if(url) window.open(url,'_blank');
         }
-
-        function closeModal() {
-            document.getElementById('dynamicModal').classList.remove('active');
-            document.body.style.overflow = 'auto';
-            document.getElementById('modalIframe').src = '';
-            document.getElementById('videoElement').src = '';
-            currentToolKey = '';
-        }
-
-        function closeModalOnOutsideClick(e) { if (e.target.classList.contains('modal')) closeModal(); }
-
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') closeModal();
-            if (!document.querySelector('.modal.active')) {
-                if (e.key === 'ArrowRight') nextSection();
-                else if (e.key === 'ArrowLeft') prevSection();
-            }
+        function closeModal() { document.getElementById('dynamicModal').classList.remove('active'); document.body.style.overflow='auto'; iframeCleanup(); }
+        function iframeCleanup() { const iframe=document.getElementById('modalIframe'); if(iframe) iframe.src=''; const vid=document.getElementById('videoElement'); if(vid) vid.src=''; }
+        function closeModalOnOutsideClick(e) { if(e.target.classList.contains('modal')) closeModal(); }
+        document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); if(!document.querySelector('.modal.active')){ if(e.key==='ArrowRight') nextSection(); else if(e.key==='ArrowLeft') prevSection(); } });
+        window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); deferredPrompt=e; const btn=document.getElementById('pwaInstallBtn'); if(btn) btn.style.display='inline-block'; });
+        function installPWA() { if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt.userChoice.then(r=>{ if(r.outcome==='accepted'){ const btn=document.getElementById('pwaInstallBtn'); if(btn){ btn.innerHTML='INSTALLED'; btn.classList.add('installed'); } } deferredPrompt=null; }); } }
+        if(window.matchMedia('(display-mode: standalone)').matches){ const btn=document.getElementById('pwaInstallBtn'); if(btn){ btn.style.display='inline-block'; btn.innerHTML='INSTALLED'; btn.classList.add('installed'); } }
+        generateAllSections();
+        initializeSectionMenu();
+        updateSectionDisplay();
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('sectionMenuMobile');
+            const toggle = document.getElementById('sectionMenuToggle');
+            if(menu && !menu.contains(e.target) && toggle && !toggle.contains(e.target)) closeSectionMenu();
         });
-
-        window.addEventListener('beforeinstallprompt', e => {
-            e.preventDefault(); 
-            deferredPrompt = e;
-            const installBtn = document.getElementById('pwaInstallBtn');
-            if (installBtn) installBtn.style.display = 'inline-block';
-        });
-
-        function installPWA() {
-            const btn = document.getElementById('pwaInstallBtn');
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then(r => {
-                    if (r.outcome === 'accepted') { 
-                        btn.innerHTML = 'INSTALLED'; 
-                        btn.classList.add('installed'); 
-                    }
-                    deferredPrompt = null;
-                });
-            }
-        }
-
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            const btn = document.getElementById('pwaInstallBtn');
-            if (btn) {
-                btn.style.display = 'inline-block'; 
-                btn.innerHTML = 'INSTALLED'; 
-                btn.classList.add('installed');
-            }
-        }
     </script>
 </body>
 </html>
