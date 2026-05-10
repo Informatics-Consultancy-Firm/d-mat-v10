@@ -247,13 +247,18 @@
         .modal-header h2 { display: flex; align-items: center; gap: 15px; font-size: 18px; font-weight: 700; }
         .modal-header .card-number { margin-bottom: 0; }
         .modal-header-buttons { display: flex; align-items: center; gap: 10px; }
-        .open-external-btn {
+        .open-external-btn, .download-btn {
             background: #ffc107; border: none; color: #004080;
             font-size: 12px; cursor: pointer; padding: 8px 15px;
             border-radius: 20px; display: flex; align-items: center;
             transition: all 0.2s ease; font-weight: 700;
             font-family: 'Oswald', Arial, sans-serif; gap: 5px;
         }
+        .download-btn {
+            background: #28a745;
+            color: #ffffff;
+        }
+        .download-btn:hover { background: #218838; transform: scale(1.05); }
         .open-external-btn:hover { background: #ffca2c; transform: scale(1.05); }
         .close-btn {
             background: #ffffff; border: none; color: #004080;
@@ -387,10 +392,6 @@
 </head>
 <body>
     <div class="page-container">
-        <div id="updateNotification" style="display:none; position:fixed; top:20px; right:20px; background:#28a745; color:#ffffff; padding:15px 25px; border-radius:8px; box-shadow:0 4px 20px rgba(0,0,0,0.2); z-index:10000; font-size:14px; gap:10px; align-items:center;">
-            New version available! 
-            <button onclick="location.reload()" style="margin-left:10px; padding:5px 15px; border:none; background:#fff; color:#28a745; border-radius:4px; cursor:pointer; font-weight:700;">UPDATE</button>
-        </div>
         <div class="page-header">
             <div class="logo-row">
                 <div class="logo-box">
@@ -431,7 +432,6 @@
         </div>
 
         <div class="content-card">
-            <!-- Section 1 -->
             <div class="section-content active" id="section1">
                 <div class="section-title-bar"><span class="section-number">1</span><span class="section-title">CAMPAIGN OVERVIEW</span></div>
                 <div class="data-flow-intro"><p>High-level overview of the 2027 mass ITN distribution campaign, objectives, targets, timeline, and key stakeholders.</p></div>
@@ -454,7 +454,11 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <h2><span class="card-number" id="modalNumber">1</span><span id="modalTitleText">TOOL NAME</span></h2>
-                <div class="modal-header-buttons"><button class="open-external-btn" id="openExternalBtn" onclick="openInNewTab()" style="display:none;">OPEN IN NEW TAB</button><button class="close-btn" onclick="closeModal()">✕</button></div>
+                <div class="modal-header-buttons">
+                    <button class="download-btn" id="downloadBtn" onclick="downloadCurrentFile()" style="display:none;">📥 DOWNLOAD</button>
+                    <button class="open-external-btn" id="openExternalBtn" onclick="openInNewTab()" style="display:none;">🔗 OPEN IN NEW TAB</button>
+                    <button class="close-btn" onclick="closeModal()">✕</button>
+                </div>
             </div>
             <div class="modal-tabs"><button class="modal-tab active" id="tabConcept" onclick="switchTab('concept')"><span class="tab-icon">📄</span> CONCEPT</button><button class="modal-tab" id="tabIllustration" onclick="switchTab('illustration')"><span class="tab-icon">🎥</span> VIDEOS</button><button class="modal-tab" id="tabTool" onclick="switchTab('tool')"><span class="tab-icon">🔧</span> TOOL</button></div>
             <div class="modal-body"><div class="iframe-container"><div class="loading-container" id="loadingContainer" style="display:none;"><div class="loading-spinner"></div><div class="loading-text">Loading content...</div></div><iframe id="modalIframe" src="" style="display:none;" allow="fullscreen"></iframe><div id="videoPlayer" style="display:none; width:100%; height:100%; background:#000; flex-direction:column;"><div class="video-controls"><div class="part-selector" id="partSelector"></div></div><video id="videoElement" controls style="width:100%; height:calc(100% - 70px); object-fit: contain;"></video></div><div class="placeholder-message" id="modalPlaceholder"><div class="placeholder-icon" id="placeholderIcon">📄</div><h3 id="placeholderTitle">Content Not Available</h3><p id="placeholderText">URL not configured yet for this tab.</p></div></div></div>
@@ -479,253 +483,111 @@
         };
 
         // ============================================================
-        // FILE PATHS CONFIGURATION - REPLACE ALL PLACEHOLDERS BELOW
+        // FILE PATHS CONFIGURATION - REPLACE THESE WITH YOUR ACTUAL FILE PATHS
         // ============================================================
-        // HOW TO USE:
-        // 1. For each card key (e.g., "1-1", "2-3", etc.), replace the placeholder strings
-        // 2. Supported formats: .pdf, .docx, .pptx, .xlsx, .mp4, .jpg, .png, and any web URL
-        // 3. You can use relative paths (e.g., "documents/file.pdf") or full URLs
-        // 4. Leave empty string "" if no content for that tab
-        // 5. For videos, you can add multiple parts (e.g., "Part 1", "Part 2")
-        //
-        // EXAMPLE:
-        // "1-1": {
-        //     concept: "documents/campaign_background.pdf",
-        //     illustration: { "Introduction": "videos/intro.mp4", "Details": "videos/details.mp4" },
-        //     tool: "tools/campaign_template.xlsx"
-        // }
+        // SUPPORTED FILE TYPES:
+        // - PDF: displays in iframe
+        // - DOCX/DOC/PPTX/PPT/XLSX/XLS: uses Google Docs Viewer for display
+        // - MP4/WEBM: plays in video player
+        // - JPG/PNG/GIF: displays image
+        // - Any URL: embeds the webpage
         // ============================================================
+
+        // Helper function to get embed URL for different file types
+        function getEmbedUrl(fileUrl) {
+            if (!fileUrl) return '';
+            
+            const extension = fileUrl.split('.').pop().toLowerCase();
+            
+            // PDF - embed directly
+            if (extension === 'pdf') {
+                return fileUrl;
+            }
+            
+            // Office files - use Google Docs Viewer
+            if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(extension)) {
+                return 'https://docs.google.com/gview?url=' + encodeURIComponent(fileUrl) + '&embedded=true';
+            }
+            
+            // Images - embed directly
+            if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(extension)) {
+                return fileUrl;
+            }
+            
+            // Videos - handled separately
+            if (['mp4', 'webm', 'ogg', 'mov'].includes(extension)) {
+                return fileUrl;
+            }
+            
+            // Default - try direct embedding
+            return fileUrl;
+        }
+
+        function isVideoFile(fileUrl) {
+            if (!fileUrl) return false;
+            const videoExtensions = ['mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv'];
+            const extension = fileUrl.split('.').pop().toLowerCase();
+            return videoExtensions.includes(extension);
+        }
+
+        function isImageFile(fileUrl) {
+            if (!fileUrl) return false;
+            const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
+            const extension = fileUrl.split('.').pop().toLowerCase();
+            return imageExtensions.includes(extension);
+        }
+
+        let currentFileUrl = '';
+        let currentFileName = '';
 
         const toolUrls = {
             // SECTION 1: CAMPAIGN OVERVIEW (Cards 1-4)
             "1-1": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",  // e.g., "documents/Device_Assessment_ITN_2027.docx"
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },  // e.g., "videos/training.mp4"
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"  // e.g., "tools/assessment.xlsx"
-            },
-            "1-2": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
+                concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH",  // e.g., "documents/campaign_background.pdf"
                 illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
                 tool: "REPLACE_WITH_YOUR_TOOL_PATH"
             },
-            "1-3": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "1-4": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-
-            // SECTION 2: STANDARD OPERATING PROCEDURES (Cards 1-6)
-            "2-1": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "2-2": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "2-3": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "2-4": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "2-5": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "2-6": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-
-            // SECTION 3: TRAINING MATERIALS (Cards 1-5)
-            "3-1": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Part 1": "REPLACE_WITH_YOUR_VIDEO_PATH", "Part 2": "REPLACE_WITH_YOUR_VIDEO_PATH", "Part 3": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "3-2": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Part 1": "REPLACE_WITH_YOUR_VIDEO_PATH", "Part 2": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "3-3": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "3-4": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Part 1": "REPLACE_WITH_YOUR_VIDEO_PATH", "Part 2": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "3-5": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-
-            // SECTION 4: DATA COLLECTION & QA (Cards 1-4)
-            "4-1": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "4-2": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "4-3": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "4-4": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-
-            // SECTION 5: IMPLEMENTATION GUIDE (Cards 1-4)
-            "5-1": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "5-2": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "5-3": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "5-4": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-
-            // SECTION 6: MONITORING & EVALUATION (Cards 1-3)
-            "6-1": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "6-2": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "6-3": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-
-            // SECTION 7: DISTRIBUTION LOGISTICS (Cards 1-4)
-            "7-1": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "7-2": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "7-3": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "7-4": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-
-            // SECTION 8: STAFF MANAGEMENT (Cards 1-4)
-            "8-1": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "8-2": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "8-3": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "8-4": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-
-            // SECTION 9: COMMUNITY ENGAGEMENT (Cards 1-4)
-            "9-1": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "9-2": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "9-3": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "9-4": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-
-            // SECTION 10: TROUBLESHOOTING & FAQ (Cards 1-4)
-            "10-1": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "10-2": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "10-3": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            },
-            "10-4": { 
-                concept: "REPLACE_WITH_YOUR_FILE_PATH",
-                illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" },
-                tool: "REPLACE_WITH_YOUR_TOOL_PATH"
-            }
+            "1-2": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "1-3": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "1-4": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "2-1": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "2-2": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "2-3": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "2-4": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "2-5": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "2-6": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "3-1": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Part 1": "REPLACE_WITH_YOUR_VIDEO_PATH", "Part 2": "REPLACE_WITH_YOUR_VIDEO_PATH", "Part 3": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "3-2": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Part 1": "REPLACE_WITH_YOUR_VIDEO_PATH", "Part 2": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "3-3": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "3-4": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Part 1": "REPLACE_WITH_YOUR_VIDEO_PATH", "Part 2": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "3-5": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "4-1": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "4-2": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "4-3": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "4-4": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "5-1": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "5-2": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "5-3": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "5-4": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "6-1": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "6-2": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "6-3": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "7-1": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "7-2": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "7-3": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "7-4": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "8-1": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "8-2": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "8-3": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "8-4": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "9-1": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "9-2": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "9-3": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "9-4": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "10-1": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "10-2": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "10-3": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" },
+            "10-4": { concept: "REPLACE_WITH_YOUR_DOCUMENT_PATH", illustration: { "Training Video": "REPLACE_WITH_YOUR_VIDEO_PATH" }, tool: "REPLACE_WITH_YOUR_TOOL_PATH" }
         };
 
         const toolInfo = {};
@@ -742,8 +604,6 @@
             if(!container) return;
             let html = '';
             for(let s=2; s<=10; s++) {
-                const sectionCards = sectionsData[s];
-                if(!sectionCards) continue;
                 html += `<div class="section-content" id="section${s}">
                     <div class="section-title-bar"><span class="section-number">${s}</span><span class="section-title">${getSectionName(s)}</span></div>
                     <div class="data-flow-intro"><p>${getSectionDesc(s)}</p></div>
@@ -820,6 +680,18 @@
         function nextSection() { if(currentSection < totalSections) { currentSection++; updateSectionDisplay(); } }
         function prevSection() { if(currentSection > 1) { currentSection--; updateSectionDisplay(); } }
 
+        function downloadCurrentFile() {
+            if (currentFileUrl && currentFileUrl !== "REPLACE_WITH_YOUR_DOCUMENT_PATH" && currentFileUrl !== "REPLACE_WITH_YOUR_VIDEO_PATH" && currentFileUrl !== "REPLACE_WITH_YOUR_TOOL_PATH") {
+                const link = document.createElement('a');
+                link.href = currentFileUrl;
+                link.download = currentFileName || 'download';
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
         function openModal(modalId) {
             currentToolKey = modalId.replace('modal-', '');
             currentTab = 'concept';
@@ -829,12 +701,19 @@
             document.getElementById('modalTitleText').textContent = info.title;
             document.getElementById('placeholderTitle').textContent = info.title;
             const urls = toolUrls[currentToolKey];
-            document.getElementById('tabConcept').style.display = urls && urls.concept && urls.concept !== "REPLACE_WITH_YOUR_FILE_PATH" ? 'flex' : 'none';
-            document.getElementById('tabIllustration').style.display = urls && urls.illustration && Object.keys(urls.illustration).length && urls.illustration["Training Video"] !== "REPLACE_WITH_YOUR_VIDEO_PATH" ? 'flex' : 'none';
-            document.getElementById('tabTool').style.display = urls && urls.tool && urls.tool !== "REPLACE_WITH_YOUR_TOOL_PATH" ? 'flex' : 'none';
+            
+            const hasConcept = urls && urls.concept && urls.concept !== "REPLACE_WITH_YOUR_DOCUMENT_PATH";
+            const hasIllustration = urls && urls.illustration && Object.keys(urls.illustration).length && urls.illustration["Training Video"] !== "REPLACE_WITH_YOUR_VIDEO_PATH";
+            const hasTool = urls && urls.tool && urls.tool !== "REPLACE_WITH_YOUR_TOOL_PATH";
+            
+            document.getElementById('tabConcept').style.display = hasConcept ? 'flex' : 'none';
+            document.getElementById('tabIllustration').style.display = hasIllustration ? 'flex' : 'none';
+            document.getElementById('tabTool').style.display = hasTool ? 'flex' : 'none';
+            
             let activeTab = 'concept';
-            if((!urls || !urls.concept || urls.concept === "REPLACE_WITH_YOUR_FILE_PATH") && urls && urls.illustration && Object.keys(urls.illustration).length && urls.illustration["Training Video"] !== "REPLACE_WITH_YOUR_VIDEO_PATH") activeTab = 'illustration';
-            else if((!urls || !urls.concept || urls.concept === "REPLACE_WITH_YOUR_FILE_PATH") && (!urls.illustration || !Object.keys(urls.illustration).length || urls.illustration["Training Video"] === "REPLACE_WITH_YOUR_VIDEO_PATH") && urls && urls.tool && urls.tool !== "REPLACE_WITH_YOUR_TOOL_PATH") activeTab = 'tool';
+            if(!hasConcept && hasIllustration) activeTab = 'illustration';
+            else if(!hasConcept && !hasIllustration && hasTool) activeTab = 'tool';
+            
             document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
             const tabBtn = document.getElementById('tab'+activeTab.charAt(0).toUpperCase()+activeTab.slice(1));
             if(tabBtn) tabBtn.classList.add('active');
@@ -843,12 +722,14 @@
             document.body.style.overflow = 'hidden';
             loadTabContent(currentTab);
         }
+        
         function switchTab(tabName) {
             currentTab = tabName;
             document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('tab'+tabName.charAt(0).toUpperCase()+tabName.slice(1)).classList.add('active');
             loadTabContent(tabName);
         }
+        
         function loadTabContent(tabName) {
             const iframe = document.getElementById('modalIframe');
             const videoPlayer = document.getElementById('videoPlayer');
@@ -856,6 +737,7 @@
             const placeholder = document.getElementById('modalPlaceholder');
             const loading = document.getElementById('loadingContainer');
             const extBtn = document.getElementById('openExternalBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
             const partSelector = document.getElementById('partSelector');
             
             iframe.style.display = 'none'; 
@@ -863,21 +745,23 @@
             placeholder.style.display = 'none'; 
             loading.style.display = 'none'; 
             extBtn.style.display = 'none';
+            downloadBtn.style.display = 'none';
             
             const urls = toolUrls[currentToolKey];
             if(!urls) { placeholder.style.display='flex'; return; }
             
+            let fileUrl = '';
+            let isVideo = false;
+            
             if(tabName === 'concept') {
-                const url = urls.concept;
-                if(!url || url === "REPLACE_WITH_YOUR_FILE_PATH") { placeholder.style.display='flex'; return; }
-                loading.style.display='flex';
-                iframe.onload = ()=>{ loading.style.display='none'; iframe.style.display='block'; };
-                iframe.onerror = ()=>{ loading.style.display='none'; placeholder.style.display='flex'; };
-                iframe.src = url + (url.includes('?')?'&_t=':'?_t=')+Date.now();
-                extBtn.style.display='flex';
+                fileUrl = urls.concept;
+                currentFileName = `concept_${currentToolKey}.${fileUrl ? fileUrl.split('.').pop() : 'pdf'}`;
             } else if(tabName === 'illustration') {
                 const videos = urls.illustration;
-                if(!videos || Object.keys(videos).length===0 || videos["Training Video"] === "REPLACE_WITH_YOUR_VIDEO_PATH") { placeholder.style.display='flex'; return; }
+                if(!videos || Object.keys(videos).length===0 || videos["Training Video"] === "REPLACE_WITH_YOUR_VIDEO_PATH") { 
+                    placeholder.style.display='flex'; 
+                    return; 
+                }
                 partSelector.innerHTML = '';
                 Object.keys(videos).forEach((part, idx) => {
                     const btn = document.createElement('button');
@@ -886,33 +770,73 @@
                     btn.onclick = (e) => {
                         document.querySelectorAll('.part-btn').forEach(b=>b.classList.remove('active'));
                         btn.classList.add('active');
-                        videoElement.src = videos[part];
+                        const newVideoUrl = videos[part];
+                        videoElement.src = newVideoUrl;
+                        currentFileUrl = newVideoUrl;
+                        currentFileName = `${part}_${currentToolKey}.mp4`;
+                        downloadBtn.style.display = newVideoUrl && newVideoUrl !== "REPLACE_WITH_YOUR_VIDEO_PATH" ? 'flex' : 'none';
+                        extBtn.style.display = newVideoUrl && newVideoUrl !== "REPLACE_WITH_YOUR_VIDEO_PATH" ? 'flex' : 'none';
                         videoElement.play();
                     };
                     partSelector.appendChild(btn);
                 });
                 const firstKey = Object.keys(videos)[0];
-                videoElement.src = videos[firstKey];
+                fileUrl = videos[firstKey];
+                currentFileName = `${firstKey}_${currentToolKey}.mp4`;
+                isVideo = true;
+                
+                videoElement.src = fileUrl;
                 videoPlayer.style.display = 'flex';
-                extBtn.style.display = 'flex';
+                if (fileUrl && fileUrl !== "REPLACE_WITH_YOUR_VIDEO_PATH") {
+                    extBtn.style.display = 'flex';
+                    downloadBtn.style.display = 'flex';
+                }
+                currentFileUrl = fileUrl;
+                return;
             } else if(tabName === 'tool') {
-                const url = urls.tool;
-                if(!url || url === "REPLACE_WITH_YOUR_TOOL_PATH") { placeholder.style.display='flex'; return; }
-                loading.style.display='flex';
-                iframe.onload = ()=>{ loading.style.display='none'; iframe.style.display='block'; };
-                iframe.onerror = ()=>{ loading.style.display='none'; placeholder.style.display='flex'; };
-                iframe.src = url + (url.includes('?')?'&_t=':'?_t=')+Date.now();
-                extBtn.style.display='flex';
+                fileUrl = urls.tool;
+                currentFileName = `tool_${currentToolKey}.${fileUrl ? fileUrl.split('.').pop() : 'xlsx'}`;
+            }
+            
+            currentFileUrl = fileUrl;
+            
+            if(!fileUrl || fileUrl === "REPLACE_WITH_YOUR_DOCUMENT_PATH" || fileUrl === "REPLACE_WITH_YOUR_TOOL_PATH") { 
+                placeholder.style.display='flex'; 
+                return; 
+            }
+            
+            if (isVideoFile(fileUrl)) {
+                videoPlayer.style.display = 'flex';
+                videoElement.src = fileUrl;
+                extBtn.style.display = 'flex';
+                downloadBtn.style.display = 'flex';
+                return;
+            }
+            
+            loading.style.display='flex';
+            
+            const embedUrl = getEmbedUrl(fileUrl);
+            
+            iframe.onload = () => { 
+                loading.style.display='none'; 
+                iframe.style.display='block'; 
+            };
+            iframe.onerror = () => { 
+                loading.style.display='none'; 
+                placeholder.style.display='flex';
+                placeholder.querySelector('p').innerHTML = `Unable to preview this file type.<br><br>Click the DOWNLOAD button above to save the file.`;
+            };
+            iframe.src = embedUrl + (embedUrl.includes('?')?'&_t=':'?_t=')+Date.now();
+            extBtn.style.display = 'flex';
+            downloadBtn.style.display = 'flex';
+        }
+        
+        function openInNewTab() {
+            if (currentFileUrl && currentFileUrl !== "REPLACE_WITH_YOUR_DOCUMENT_PATH" && currentFileUrl !== "REPLACE_WITH_YOUR_VIDEO_PATH" && currentFileUrl !== "REPLACE_WITH_YOUR_TOOL_PATH") {
+                window.open(currentFileUrl, '_blank');
             }
         }
-        function openInNewTab() {
-            const urls = toolUrls[currentToolKey];
-            let url='';
-            if(currentTab==='concept') url=urls?.concept;
-            else if(currentTab==='illustration') { const videos=urls?.illustration; if(videos) url=Object.values(videos)[0]; }
-            else if(currentTab==='tool') url=urls?.tool;
-            if(url && url !== "REPLACE_WITH_YOUR_FILE_PATH" && url !== "REPLACE_WITH_YOUR_VIDEO_PATH" && url !== "REPLACE_WITH_YOUR_TOOL_PATH") window.open(url,'_blank');
-        }
+        
         function closeModal() { 
             document.getElementById('dynamicModal').classList.remove('active'); 
             document.body.style.overflow='auto'; 
@@ -920,7 +844,9 @@
             if(iframe) iframe.src=''; 
             const vid=document.getElementById('videoElement'); 
             if(vid) { vid.pause(); vid.src=''; }
+            currentFileUrl = '';
         }
+        
         function closeModalOnOutsideClick(e) { if(e.target.classList.contains('modal')) closeModal(); }
         
         document.addEventListener('keydown', e=>{ 
